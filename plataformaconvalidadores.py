@@ -463,18 +463,18 @@ while True:
 
 
 
-# #Crear campaña
+# #Crear campana
 # campana_controller.crear_campana("Campana A", "Campana para clientes con atributo A")
 # campana_controller.crear_campana("Campana B", "Campana para clientes con atributo B")
 
-# #Agregar lista de clientes a campaña
+# #Agregar lista de clientes a campana
 # campana_controller.asignar_lista_clientes("Campana A", "Lista A")
 # campana_controller.asignar_lista_clientes("Campana B", "Lista B")
 
-# #Agregar mail a campaña
+# #Agregar mail a campana
 # campana_controller.asignar_mail("Campana A", "Oferta para A")
 # campana_controller.asignar_mail("Campana B", "Oferta para B")
 
-# #Enviar campaña
+# #Enviar campana
 # campana_controller.enviar_campana("Campana A")
 # campana_controller.enviar_campana("Campana B")
