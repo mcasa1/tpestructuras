@@ -1,3 +1,5 @@
+import re
+
 # Clase cliente
 class Cliente:
     def __init__(self, id, nombre, email, fecha_nacimiento, direccion, sexo):
@@ -9,32 +11,19 @@ class Cliente:
         self.sexo = sexo
         self.oculto = False
 
-
-# Clase validacion cliente
-class Validador:
-    def __init__ (self) -> None:
-        pass
-
-    lista_mails = ["hotmail","gmail","yahoo","outlook","itba"]
-    lista_sexo = ["M","F"]
-
-    def validar_nombre(self, nombre: str) -> bool:
+    def validar_nombre(nombre: str) -> bool:
         if nombre.isalpha():
             return True
         else:
             return False
 
-    def validar_email(self, email: str) -> bool:
-        if "@" in email:
-            mail_lista = email.split("@")
-            mail_lista2 = mail_lista[1].split(".")
-            if len(mail_lista2) in [2,3]:
-                if mail_lista2[0] in self.lista_mails:
-                    return True
-                else:
-                    return False
+    def validar_email(email: str) -> bool:
+        if re.match(r"[^@]+@[^@]+\.[^@]+", email):  
+            return True
+        else:  
+            return False 
 
-    def validar_fecha_nacimiento(self, fecha_nacimiento: str) -> bool:
+    def validar_fecha_nacimiento(fecha_nacimiento: str) -> bool:
         if fecha_nacimiento.count("/") == 2:
             fecha_lista = fecha_nacimiento.split("/")
             if len(fecha_lista) == 3:
@@ -43,7 +32,7 @@ class Validador:
                 else:
                     return False
 
-    def validar_direccion(self, direccion: str) -> bool:
+    def validar_direccion(direccion: str) -> bool:
         direccion_lista = direccion.split(" ")
         if len(direccion_lista) == 2:
             if direccion_lista[0].isalpha() and direccion_lista[1].isnumeric():
@@ -51,8 +40,8 @@ class Validador:
             else:
                 return False
 
-    def validar_sexo(self, sexo: str) -> bool:
-        if sexo in self.lista_sexo:
+    def validar_sexo(sexo: str) -> bool:
+        if sexo.upper in ["M","F"]:
             return True
         else:
             return False
@@ -327,9 +316,6 @@ def menu_mails():
     print("2. Listar mails")
     print("3. Volver")
 
-#Instancio clase validador
-validador = Validador()
-
 #while
 while True:
     menu_principal()
@@ -340,19 +326,19 @@ while True:
             opcion = input("Ingrese una opcion: ")
             if opcion == "1":
                 nombre = input("Ingrese el nombre del cliente: ")
-                while not validador.validar_nombre(nombre):
+                while not Cliente.validar_nombre(nombre):
                     nombre = input("Ingresar nombre con solo letras. Ingresar el nombre otra vez: ")
                 email = input("Ingrese el email del cliente: ")
-                while not validador.validar_email(email):
+                while not Cliente.validar_email(email):
                     email = input("Ingresar un email valido con formato @. Ingresar el email otra vez: ")
                 fecha_nacimiento = input("Ingrese la fecha de nacimiento del cliente en formato dd/mm/aaaa: ")
-                while not validador.validar_fecha_nacimiento(fecha_nacimiento):
+                while not Cliente.validar_fecha_nacimiento(fecha_nacimiento):
                     fecha_nacimiento = input("Ingresar formato dd/mm/aaaa. Ingresar la fecha de nacimiento otra vez: ")
                 direccion = input("Ingrese la direccion del cliente: ")
-                while not validador.validar_direccion(direccion):
+                while not Cliente.validar_direccion(direccion):
                     direccion = input("Ingresar direccion con solo letras y numeros (Por ejemplo Melian 1234). Ingresar la direccion otra vez: ")
                 sexo = input("Ingrese el sexo del cliente (M/F): ")
-                while not validador.validar_sexo(sexo):
+                while not Cliente.validar_sexo(sexo):
                     sexo = input("Ingresar sexo M o F. Ingresar el sexo otra vez: ")
                 cliente_controller.agregar_cliente(nombre, email, fecha_nacimiento, direccion, sexo)
             elif opcion == "2":
@@ -380,7 +366,7 @@ while True:
     elif opcion == "3":
         while True:
                 mail_cliente = input("Ingrese el mail del cliente: ")
-                while not validador.validar_email(mail_cliente):
+                while not Cliente.validar_email(mail_cliente):
                     mail_cliente = input("Ingresar un email valido con formato @. Ingresar el email otra vez: ")
                 nombre_atributo = input("Ingrese el nombre del atributo: ")
                 cliente_atributo_controller.agregar_atributo_cliente(mail_cliente, nombre_atributo)
