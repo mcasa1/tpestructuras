@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "TP-Estructuras", "TP-Estructuras\TP-Estructuras.pyproj", "{FA1D8B61-AED5-4C22-93C0-9C6F1070E44E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA1D8B61-AED5-4C22-93C0-9C6F1070E44E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA1D8B61-AED5-4C22-93C0-9C6F1070E44E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19C0D977-9598-4DA2-9A31-2309579305CF}
+	EndGlobalSection
+EndGlobal
