@@ -14,8 +14,6 @@ class Contacto:
         self.direccion = direccion
         self.sexo = sexo
         self.oculto = 1
-    def __str__(self):
-        return "ID: {}, Nombre: {}, Email: {}, Fecha de nacimiento: {}, Direccion: {}, Sexo: {}".format(self.id, self.nombre, self.email, self.fecha_nacimiento, self.direccion, self.sexo)
     
 
     def validar_nombre(nombre: str) -> bool:
@@ -120,7 +118,7 @@ class Contacto_Model:
         MySql = Conectores_BD.conector_mysql()
                 
         #Qwery
-        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS LEFT JOIN ATRIBUTOS_CONTACTO"
+        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS LEFT JOIN ATRIBUTOS_CONTACTO ON CONTACTOS.ID_CONTACTO = ATRIBUTOS_CONTACTO.ID_CONTACTO"
         
         qa = array("b", [0,0,0,0,0,0,0,0])
         
