@@ -10,8 +10,6 @@ class Atributos_Contacto(Atributo,Contacto):
         
 class Atributos_Contacto_Controller():
 
-    Lista_Atributos = []
-
     #Metodo para vincular atributos a un contacto
     def vincular_atributos_contacto(ID_Atributo, id):
         atributos_contacto = Atributos_Contacto(ID_Atributo, id)
