@@ -1,6 +1,7 @@
 from Conectores_BD import *
 import math
 import pandas as pd
+from Contacto import *
 
 # Clase para mantener una lista de Contactos
 class ListaContactos:
@@ -93,22 +94,36 @@ WHERE CONTACTOS.CONTACTO_HABILITACION = 1;
             result = conn.execute(text(qwery))
         return result
 
-
 class ListaContactosController:
+# Devuleve los datos generales de una lista de contactos. Nombre, descripcion y fecha de creacion Y devuelve datos de los contactos asignados en
+# Si no se especifica un nombre de ListaContatos, devuelve todos los datos que haya
     def obtener_lista_contactos_contactos(nombreListaContactos = None) -> list:
-        lista_contactos = []
-        datos = ListaContactosModel.getListaContactos_Contactos()
+        #lista_contactos = []
+        df = pd.DataFrame(ListaContactosModel.getListaContactos_Contactos())
 
-
+        #crear un objeto Contacto con los valores de las columanas ID_CONTACTO,NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION Y SEXO Y agregarlo en una nueva columna
+        #del dataframe llamada Contacto
+        df['Contacto'] = df.apply(lambda x: Contacto(id = x[3],nombre = x[4],fecha_nacimiento = x[5],email = x[6],direccion = x[7],sexo = x[8]), axis = 1)
         
-        #for dato in datos:
-        #    value = ListaContactos(dato[1], dato[2],fechaCreacion = dato[3],ID_lista_contactos = dato[0])
-        #    lista_contactos.append(value)
-        #return lista_contactos
+        #conservar solo las columnas 'ID_LISTA_CONTACTOS','NOMBRE_LISTA_CONTACTOS','DESCRIPCION_LISTA_CONTACTOS','Contacto' del df
+        df = df[['ID_LISTA_CONTACTOS','NOMBRE_LISTA_CONTACTOS','DESCRIPCION_LISTA_CONTACTOS','Contacto']]
 
+        # agrupar las columnas por ID_LISTA_CONTACTOS, NOMBRE_LISTA_CONTACTOS, DESCRIPCION_LISTA_CONTACTOS y crear una lista con los valores de la columna Contacto
+        df = df.groupby(['ID_LISTA_CONTACTOS','NOMBRE_LISTA_CONTACTOS','DESCRIPCION_LISTA_CONTACTOS'])['Contacto'].apply(list).reset_index(name='Contacto')
+
+        #crear un objeto ListaContactos con los valores de las columanas ID_LISTA_CONTACTOS,NOMBRE_LISTA_CONTACTOS, DESCRIPCION_LISTA_CONTACTOS Y Contacto
+        df['ListaContactos'] = df.apply(lambda x: ListaContactos(x[1],x[2],x[3],None,x[0]), axis = 1)
+
+        #crear un objeto lista con los valores de la columna ListaContactos
+        lista_contactos = df['ListaContactos'].tolist() 
+
+        return lista_contactos
+#Crea una lista de contactos sin contactos asignados
     def crear_lista_contactos(nombre_lista_contacto, descripcion_lista_contacto):
         lista = ListaContactos(nombre_lista_contacto, descripcion_lista_contacto)
         ListaContactosModel.postListaContactos(lista)
+#A partir de un objeto ListaContactos, agrega todos los contactos que esten en el atributo .Contactos []
+# a la tabla CONTACTOS_LISTA_CONTACTOS de la bd
     def agregarContactos(lista_contactos : ListaContactos):
         #crear un dataframe con los datos para enviar a SQL"
         df = pd.DataFrame()
@@ -118,6 +133,8 @@ class ListaContactosController:
         df['ID_LISTA_CONTACTOS'] = lista_contactos.Id_lista
 
         ListaContactosModel.addContactos(df)
+# Devuleve los datos generales de una lista de contactos. Nombre, descripcion y fecha de creacion. No devuelve datos de contactos
+# Si no se especifica un nombre de ListaContatos, devuelve todos. 
     def obtener_lista_contactos_datos(nombreListaContactos = None) -> list:
         lista_contactos = []
         datos = ListaContactosModel.getListaContactosDatos(nombreListaContactos)
@@ -126,11 +143,7 @@ class ListaContactosController:
             lista_contactos.append(value)
         return lista_contactos
 
-
-
 # TEST
-
-
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 #ListaContactosController.crear_lista_contactos('+18/futbol','Lista con los contactos que les interesa el futbol y son mayores de edad')
 #ListaContactosController.crear_lista_contactos('+18/futbol','Lista con los contactos que les interesa el futbol y son mayores de edad')
@@ -147,4 +160,4 @@ class ListaContactosController:
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
-ListaContactosController.obtener_lista_contactos_contactos()
+#ListaContactosController.obtener_lista_contactos_contactos()

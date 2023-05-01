@@ -14,6 +14,8 @@ class Contacto:
         self.direccion = direccion
         self.sexo = sexo
         self.oculto = 1
+    def __str__(self):
+        return "ID: {}, Nombre: {}, Email: {}, Fecha de nacimiento: {}, Direccion: {}, Sexo: {}".format(self.id, self.nombre, self.email, self.fecha_nacimiento, self.direccion, self.sexo)
     
 
     def validar_nombre(nombre: str) -> bool:
