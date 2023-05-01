@@ -1,7 +1,8 @@
 import re
 import time
 from Conectores_BD import *
-
+from Atributos import *
+import array as array
 
 # Clase contacto
 class Contacto:
@@ -111,44 +112,98 @@ class Contacto_Model:
             conn.execute(text(qwery))
             conn.commit()
 
-    def listar_contactos(contacto, edaddesde, edadhasta):
+    def listar_contactos(contacto, edaddesde, edadhasta, atributo):
+        atributo = Atributo()
         #Conector
         MySql = Conectores_BD.conector_mysql()
                 
         #Qwery
-        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS INNER JOIN ATRIBUTOS_CONTACTO WHERE ID = '{}' OR NOMBRE_CONTACTO = '{}' OR FECHA_NACIMIENTO = '{}' OR EMAIL = '{}' OR DIRECCION = '{}' OR SEXO = '{}'".format(contacto.id, contacto.nombre, contacto.fecha_nacimiento, contacto.email, contacto.direccion, contacto.sexo)
+        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS INNER JOIN ATRIBUTOS_CONTACTO"
         
-        if contacto.id != None or contacto.nombre!= None or contacto.fecha_nacimiento != None or contacto.email != None or contacto.direccion != None or contacto.sexo or edad != None:
+        qa = array("b", [0,0,0,0,0,0,0,0])
+        
+        if contacto.id != None:
+            qa.insert(0,1)
+        if contacto.nombre != None:
+            qa.insert(1,1)
+        if contacto.fecha_nacimiento != None:
+            qa.insert(2,1)
+        if contacto.email != None:
+            qa.insert(3,1)
+        if contacto.direccion != None:
+            qa.insert(4,1)
+        if contacto.sexo != None:
+            qa.insert(5,1)
+        if edaddesde and edadhasta!= None:
+            qa.insert(6,1)
+        if atributo.ID_atributo != None:
+            qa.insert(7,1)
+        
+        if contacto.id != None or contacto.nombre!= None or contacto.fecha_nacimiento != None or contacto.email != None or contacto.direccion != None or contacto.sexo or edaddesde != None or edadhasta != None:
             qwery = qwery + "WHERE"
         
         if contacto.id != None:
-            optionalwhere = "NOMBRE_CONTACTO = '{}' AND".format(contacto.nombre)
-            qwery = qwery + optionalwhere
-            
+            if qa[0] == 1 and 1 not in qa[1:]:
+                optionalwhere = "ID_CONTACTO = '{}' ".format(contacto.id)
+                qwery = qwery + optionalwhere
+            else:
+                optionalwhere = "ID_CONTACTO = '{}' AND".format(contacto.id)
+                qwery = qwery + optionalwhere
+
         if contacto.nombre != None:
-            optionalwhere = "NOMBRE_CONTACTO = '{}' AND".format(contacto.nombre)
-            qwery = qwery + optionalwhere
+            if qa[1] == 1 and 1 not in qa[2:]:
+                optionalwhere = "NOMBRE_CONTACTO = '{}'".format(contacto.nombre)
+                qwery = qwery + optionalwhere
+            else:
+                optionalwhere = "NOMBRE_CONTACTO = '{}' AND".format(contacto.nombre)
+                qwery = qwery + optionalwhere
         
         if contacto.fecha_nacimiento != None:
-            optionalwhere = "FECHA_NACIMIENTO = '{}' AND".format(contacto.fecha_nacimiento)
-            qwery = qwery + optionalwhere
+            if qa[2] == 1 and 1 not in qa[3:]:
+                optionalwhere = "FECHA_NACIMIENTO = '{}'".format(contacto.fecha_nacimiento)
+                qwery = qwery + optionalwhere
+            else:
+                optionalwhere = "FECHA_NACIMIENTO = '{}' AND".format(contacto.fecha_nacimiento)
+                qwery = qwery + optionalwhere
         
         if contacto.email != None:
-            optionalwhere = "EMAIL = '{}' AND".format(contacto.email)
-            qwery = qwery + optionalwhere
+            if qa[3] == 1 and 1 not in qa[4:]:
+                optionalwhere = "EMAIL = '{}'".format(contacto.email)
+                qwery = qwery + optionalwhere
+            else:
+                optionalwhere = "EMAIL = '{}' AND".format(contacto.email)
+                qwery = qwery + optionalwhere
         
         if contacto.direccion != None:
-            optionalwhere = "DIRECCION = '{}' AND".format(contacto.direccion)
-            qwery = qwery + optionalwhere
+            if qa[4] == 1 and 1 not in qa[5:]:
+                optionalwhere = "DIRECCION = '{}'".format(contacto.direccion)
+                qwery = qwery + optionalwhere
+            else:
+                optionalwhere = "DIRECCION = '{}' AND".format(contacto.direccion)
+                qwery = qwery + optionalwhere
         
         if contacto.sexo != None:
-            optioanlwhere = "SEXO = '{}' AND".format(contacto.sexo)
-            qwery = qwery + optionalwhere
+            if qa[5] == 1 and 1 not in qa[6:]:
+                optionalwhere = "SEXO = '{}'".format(contacto.sexo)
+                qwery = qwery + optionalwhere
+            else: 
+                optionalwhere = "SEXO = '{}' AND".format(contacto.sexo)
+                qwery = qwery + optionalwhere
         
         if edaddesde != None and edadhasta != None:
-            optionalwhere = "(SELECT DATEDIFF(CURDATE() ,FECHA_NACIMIENTO)) BETWEEN '{}' AND '{}' AND".format(edaddesde, edadhasta)
+            if qa[6] == 1 and 1 not in qa[7:]:
+                optionalwhere = "(SELECT DATEDIFF(CURDATE() ,FECHA_NACIMIENTO)) BETWEEN '{}' AND '{}'".format(edaddesde, edadhasta)
+                qwery = qwery + optionalwhere
+            else:
+                optionalwhere = "(SELECT DATEDIFF(CURDATE() ,FECHA_NACIMIENTO)) BETWEEN '{}' AND '{}' AND".format(edaddesde, edadhasta)
+                qwery = qwery + optionalwhere
+            
+        if atributo.ID_atributo != None:
+            optionalwhere = "ID_ATRIBUTO IN '{}'".format(atributo.ID_atributo)
             qwery = qwery + optionalwhere
             
+        for i in range(0, len(qa)):
+            qa[i] = 0
         
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
