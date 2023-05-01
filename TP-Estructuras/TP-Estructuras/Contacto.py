@@ -118,7 +118,7 @@ class Contacto_Model:
         MySql = Conectores_BD.conector_mysql()
                 
         #Qwery
-        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS INNER JOIN ATRIBUTOS_CONTACTO"
+        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS LEFT JOIN ATRIBUTOS_CONTACTO"
         
         qa = array("b", [0,0,0,0,0,0,0,0])
         
