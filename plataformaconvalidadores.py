@@ -1,5 +1,34 @@
 import re
 
+# Diccionario para almacenar usuarios y contraseñas
+usuarios = {}
+
+# Función para registrar un nuevo usuario
+def registro():
+    usuario = input("Ingrese un nombre de usuario: ")
+    # Verificar si el usuario ya existe
+    if usuario in usuarios:
+        print("El usuario ya existe. Por favor, intente con otro nombre de usuario.")
+    else:
+        contrasena = input("Ingrese una contraseña: ")
+        # Agregar el usuario y la contraseña al diccionario
+        usuarios[usuario] = contrasena
+        print("Registro exitoso. Por favor, inicie sesión para continuar.")
+        inicio_sesion()
+        
+
+# Función para iniciar sesión
+def inicio_sesion():
+    usuario = input("Ingrese su nombre de usuario: ")
+    contrasena = input("Ingrese su contraseña: ")
+    # Verificar si el usuario y la contraseña coinciden
+    if usuario in usuarios and usuarios[usuario] == contrasena:
+        print("Inicio de sesión exitoso.")
+    else:
+        print("Nombre de usuario o contraseña incorrectos.")
+        inicio_sesion()
+
+
 # Clase cliente
 class Cliente:
     def __init__(self, id, nombre, email, fecha_nacimiento, direccion, sexo):
@@ -40,8 +69,9 @@ class Cliente:
             else:
                 return False
 
+    #validar sexo (M o F)
     def validar_sexo(sexo: str) -> bool:
-        if sexo.upper in ["M","F"]:
+        if sexo == "M" or sexo == "F":
             return True
         else:
             return False
@@ -60,11 +90,9 @@ class ClienteController:
     
     # Metodo para imprimir los clientes no ocultos
     def obtener_clientes(self):
-        clientes = []
         for cliente in self.clientes:
             if not cliente.oculto:
-                clientes.append(cliente)
-        return clientes
+                print(f"ID: {cliente.id} - Nombre: {cliente.nombre} - Email: {cliente.email} - Fecha de nacimiento: {cliente.fecha_nacimiento} - Dirección: {cliente.direccion} - Sexo: {cliente.sexo}")
 
     # Metodo para ocultar un cliente
     def ocultar_cliente(self, email):
@@ -94,10 +122,8 @@ class AtributoController:
 
     # obtener atributos
     def obtener_atributos(self):
-        atributos = []
         for atributo in self.atributos:
-            atributos.append(atributo)
-        return atributos
+            print(f"Nombre: {atributo.nombre} - Descripción: {atributo.descripcion}")
  
     # Metodo para eliminar un atributo
     def eliminar_atributo(self, nombre):
@@ -126,15 +152,15 @@ class AtributoClienteController:
         for cliente in self.clientes_controller.clientes:
             if cliente.email == email_cliente:
                 for atributo in self.atributos_controller.atributos:
-                    for i in range(len(nombre_atributo)):
-                        if atributo.nombre == nombre_atributo[i]:
+                    if atributo.nombre == nombre_atributo:
                             # crear una instancia de ClienteAtributo con el cliente y el atributo correspondiente
-                            self.atributos_clientes.append(ClienteAtributo(cliente, atributo))
-                            print(f"Atributo {atributo.nombre} agregado al cliente {cliente.nombre}")
-                            break
-                    else:
-                        continue
-                    break
+                        self.atributos_clientes.append(ClienteAtributo(cliente, [atributo]))
+                        print(f"Atributo {atributo.nombre} agregado al cliente {cliente.nombre}")
+                        break
+                else:
+                    print(f"No se encontro el atributo {nombre_atributo}")
+                    continue
+                break
         else:
             print("No se encontro el cliente")
 
@@ -151,15 +177,21 @@ class ListaClientesController:
         self.listas = []  # lista de ListasClientes
         self.clientes_atributo_controller = clientes_atributo_controller
 
-    # Metodo para crear una lista de clientes que no esten ocultos y tengan ciertos atributos
-    def crear_lista(self, nombre, descripcion, atributos):
+    # Metodo para crear lista y agregar clientes a una lista si se les asigno el atributo especificado
+    def crear_lista(self, nombre, descripcion, nombre_atributo):
         lista = ListaClientes(nombre, descripcion)
-        for cliente in self.clientes_atributo_controller.clientes_controller.clientes:
-            if not cliente.oculto and set(atributos).issubset(set(atributo.atributos.nombre for atributo in self.clientes_atributo_controller.atributos_clientes if atributo.cliente == cliente)):
-                lista.clientes.append(cliente)
-                print(f"Cliente {cliente.nombre} agregado a la lista {lista.nombre}")
+        for atributo_cliente in self.clientes_atributo_controller.atributos_clientes:
+            for atributo in atributo_cliente.atributos:
+                if atributo.nombre == nombre_atributo:
+                    lista.clientes.append(atributo_cliente.cliente)
+                    print(f"Cliente {atributo_cliente.cliente.nombre} agregado a la lista {lista.nombre}")
         self.listas.append(lista)
 
+    # Metodo para imprimir las listas de clientes
+    def obtener_listas(self):
+        for lista in self.listas:
+            print(f"Nombre: {lista.nombre} - Descripción: {lista.descripcion}")
+            
 # Clase para representar un correo electronico
 class Mail:
     def __init__(self, asunto, cuerpo):
@@ -236,6 +268,11 @@ class CampanaController:
         else:
             print(f"No se encontro la campana '{nombre_campana}'")
 
+    #Metodo para listar las campanas
+    def listar_campanas(self):
+        for campana in self.campanas:
+            print(f"Nombre: {campana.nombre_campana} - Descripción: {campana.descripcion}")
+
     # Metodo para enviar una campana
     def enviar_campana(self, nombre_campana):
         # Buscar la campana correspondiente
@@ -269,7 +306,41 @@ mail_controller = MailController()
 # Creamos una instancia del controlador de campanas
 campana_controller = CampanaController(lista_clientes_controller, mail_controller)
 
+# # Agregamos algunos clientes
+cliente_controller.agregar_cliente("Juan", "juan@gmail.com", "23/10/1990", "av. siempre viva 123","M")
+cliente_controller.agregar_cliente("Pedro", "pedro@gmail.com", "4/10/1990", "av. siempre viva 125","M")
+
+# # Agregamos algunos atributos
+atributo_controller.agregar_atributo("A", "Atributo A")
+atributo_controller.agregar_atributo("B", "Atributo B")
+
+# # Asignamos atributos a los clientes
+cliente_atributo_controller.agregar_atributo_cliente("juan@gmail.com", "A")
+cliente_atributo_controller.agregar_atributo_cliente("pedro@gmail.com", "A")
+
+# # Creamos una lista de clientes
+lista_clientes_controller.crear_lista("Lista A", "Lista de clientes con atributo A", "A")
+lista_clientes_controller.crear_lista("Lista B", "Lista de clientes con atributo B", "B")
+
+# # Creamos algunos correos
+mail_controller.crear_mail("Oferta para A", "Oferta de A")
+mail_controller.crear_mail("Oferta para B", "Oferta de B")
+
+# #Crear campana
+campana_controller.crear_campana("Campana A", "Campana para clientes con atributo A")
+campana_controller.crear_campana("Campana B", "Campana para clientes con atributo B")
+
+# #Agregar lista de clientes a campana
+campana_controller.asignar_lista_clientes("Campana A", "Lista A")
+campana_controller.asignar_lista_clientes("Campana B", "Lista B")
+
+# #Agregar mail a campana
+campana_controller.asignar_mail("Campana A", "Oferta para A")
+campana_controller.asignar_mail("Campana B", "Oferta para B")
+
+
 #Menu principal
+
 def menu_principal():
     print(" ")
     print("Menu principal")
@@ -317,149 +388,132 @@ def menu_mails():
     print("3. Volver")
 
 #while
-while True:
-    menu_principal()
-    opcion = input("Ingrese una opcion: ")
+while True: 
+    print("1. Registro")
+    print("2. Iniciar sesión")
+    print("3. Salir")
+    opcion = input("Ingrese una opción: ")
     if opcion == "1":
-        while True:
-            menu_clientes()
-            opcion = input("Ingrese una opcion: ")
-            if opcion == "1":
-                nombre = input("Ingrese el nombre del cliente: ")
-                while not Cliente.validar_nombre(nombre):
-                    nombre = input("Ingresar nombre con solo letras. Ingresar el nombre otra vez: ")
-                email = input("Ingrese el email del cliente: ")
-                while not Cliente.validar_email(email):
-                    email = input("Ingresar un email valido con formato @. Ingresar el email otra vez: ")
-                fecha_nacimiento = input("Ingrese la fecha de nacimiento del cliente en formato dd/mm/aaaa: ")
-                while not Cliente.validar_fecha_nacimiento(fecha_nacimiento):
-                    fecha_nacimiento = input("Ingresar formato dd/mm/aaaa. Ingresar la fecha de nacimiento otra vez: ")
-                direccion = input("Ingrese la direccion del cliente: ")
-                while not Cliente.validar_direccion(direccion):
-                    direccion = input("Ingresar direccion con solo letras y numeros (Por ejemplo Melian 1234). Ingresar la direccion otra vez: ")
-                sexo = input("Ingrese el sexo del cliente (M/F): ")
-                while not Cliente.validar_sexo(sexo):
-                    sexo = input("Ingresar sexo M o F. Ingresar el sexo otra vez: ")
-                cliente_controller.agregar_cliente(nombre, email, fecha_nacimiento, direccion, sexo)
-            elif opcion == "2":
-                cliente_controller.obtener_clientes()
-            elif opcion == "3":
-                cliente_controller.ocultar_cliente()
-            elif opcion == "4":
-                break
-            else:
-                print("Opcion invalida")
+        registro()
     elif opcion == "2":
-        while True:
-            menu_atributos()
-            opcion = input("Ingrese una opcion: ")
-            if opcion == "1":
-                nombre = input("Ingrese el nombre del atributo: ")
-                descripcion = input("Ingrese la descripcion del atributo: ")
-                atributo_controller.agregar_atributo(nombre, descripcion)
-            elif opcion == "2":
-                atributo_controller.obtener_atributos()
-            elif opcion == "3":
-                break
-            else:
-                print("Opcion invalida")
+        inicio_sesion()
     elif opcion == "3":
-        while True:
-                mail_cliente = input("Ingrese el mail del cliente: ")
-                while not Cliente.validar_email(mail_cliente):
-                    mail_cliente = input("Ingresar un email valido con formato @. Ingresar el email otra vez: ")
-                nombre_atributo = input("Ingrese el nombre del atributo: ")
-                cliente_atributo_controller.agregar_atributo_cliente(mail_cliente, nombre_atributo)
-                break
-    elif opcion == "4":
-        while True:
-                nombre_lista = input("Ingrese el nombre de la lista: ")
-                descripcion_lista = input("Ingrese la descripcion de la lista: ")
-                atributos_lista = input("Ingrese los atributos de la lista: ")
-                lista_clientes_controller.crear_lista(nombre_lista, descripcion_lista, atributos_lista)
-                break
-    elif opcion == "5":
-        while True:
-            menu_campanas()
-            opcion = input("Ingrese una opcion: ")
-            if opcion == "1":
-                nombre_campana = input("Ingrese el nombre de la campana: ")
-                descripcion_campana = input("Ingrese la descripcion de la campana: ")
-                campana_controller.crear_campana(nombre_campana, descripcion_campana)
-            elif opcion == "2":
-                nombre_campana = input("Ingrese el nombre de la campana: ")
-                nombre_lista = input("Ingrese el nombre de la lista: ")
-                campana_controller.asignar_lista_clientes(nombre_campana, nombre_lista)
-            elif opcion == "3":
-                nombre_campana = input("Ingrese el nombre de la campana: ")
-                nombre_mail = input("Ingrese el nombre del mail: ")
-                campana_controller.asignar_mail(nombre_campana, nombre_mail)
-            elif opcion == "4":
-
-                nombre_campana = input("Ingrese el nombre de la campana: ")
-                campana_controller.enviar_campana(nombre_campana)
-            elif opcion == "5":
-                break
-            else:
-                print("Opcion invalida")
-    elif opcion == "6":
-        while True:
-            menu_mails()
-            opcion = input("Ingrese una opcion: ")
-            if opcion == "1":
-                asunto = input("Ingrese el asunto del mail: ")
-                cuerpo = input("Ingrese el cuerpo del mail: ")
-                mail_controller.crear_mail(asunto, cuerpo)
-            elif opcion == "2":
-                mail_controller.listar_mails()
-            elif opcion == "3":
-                break
-            else:
-                print("Opcion invalida")
-    elif opcion == "7":
         break
     else:
-        print("Opcion invalida")
+        print("Opción inválida. Por favor, intente de nuevo.")
+    while True:
+        menu_principal()
+        opcion = input("Ingrese una opcion: ")
+        if opcion == "1":
+            while True:
+                menu_clientes()
+                opcion = input("Ingrese una opcion: ")
+                if opcion == "1":
+                    nombre = input("Ingrese el nombre del cliente: ")
+                    while not Cliente.validar_nombre(nombre):
+                        nombre = input("Ingresar nombre con solo letras. Ingresar el nombre otra vez: ")
+                    email = input("Ingrese el email del cliente: ")
+                    while not Cliente.validar_email(email):
+                        email = input("Ingresar un email valido con formato @. Ingresar el email otra vez: ")
+                    fecha_nacimiento = input("Ingrese la fecha de nacimiento del cliente en formato dd/mm/aaaa: ")
+                    while not Cliente.validar_fecha_nacimiento(fecha_nacimiento):
+                        fecha_nacimiento = input("Ingresar formato dd/mm/aaaa. Ingresar la fecha de nacimiento otra vez: ")
+                    direccion = input("Ingrese la direccion del cliente: ")
+                    while not Cliente.validar_direccion(direccion):
+                        direccion = input("Ingresar direccion con solo letras y numeros (Por ejemplo Melian 1234). Ingresar la direccion otra vez: ")
+                    sexo = input("Ingrese el sexo del cliente (M/F): ")
+                    while not Cliente.validar_sexo(sexo):
+                        sexo = input("Ingresar sexo M o F. Ingresar el sexo otra vez: ")
+                    cliente_controller.agregar_cliente(nombre, email, fecha_nacimiento, direccion, sexo)
+                elif opcion == "2":
+                    cliente_controller.obtener_clientes()
+                elif opcion == "3":
+                    email = input("Ingrese el email del cliente: ")
+                    cliente_controller.ocultar_cliente(email)
+                elif opcion == "4":
+                    break
+                else:
+                    print("Opcion invalida")
+        elif opcion == "2":
+            while True:
+                menu_atributos()
+                opcion = input("Ingrese una opcion: ")
+                if opcion == "1":
+                    nombre = input("Ingrese el nombre del atributo: ")
+                    descripcion = input("Ingrese la descripcion del atributo: ")
+                    atributo_controller.agregar_atributo(nombre, descripcion)
+                elif opcion == "2":
+                    atributo_controller.obtener_atributos()
+                elif opcion == "3":
+                    break
+                else:
+                    print("Opcion invalida")
+        elif opcion == "3":
+            while True:
+                    cliente_controller.obtener_clientes()
+                    mail_cliente = input("Ingrese el mail del cliente: ")
+                    while not Cliente.validar_email(mail_cliente):
+                        mail_cliente = input("Ingresar un email valido con formato @. Ingresar el email otra vez: ")
+                    atributo_controller.obtener_atributos()
+                    nombre_atributo = input("Ingrese el nombre del atributo: ")
+                    cliente_atributo_controller.agregar_atributo_cliente(mail_cliente, nombre_atributo)
+                    break
+        elif opcion == "4":
+            while True:
+                    nombre_lista = input("Ingrese el nombre de la lista: ")
+                    descripcion_lista = input("Ingrese la descripcion de la lista: ")
+                    atributo_controller.obtener_atributos()
+                    atributos_lista = input("Ingrese los atributos de la lista: ")
+                    lista_clientes_controller.crear_lista(nombre_lista, descripcion_lista, atributos_lista)
+                    break
+        elif opcion == "5":
+            while True:
+                menu_campanas()
+                opcion = input("Ingrese una opcion: ")
+                if opcion == "1":
+                    nombre_campana = input("Ingrese el nombre de la campana: ")
+                    descripcion_campana = input("Ingrese la descripcion de la campana: ")
+                    campana_controller.crear_campana(nombre_campana, descripcion_campana)
+                elif opcion == "2":
+                    nombre_campana = input("Ingrese el nombre de la campana: ")
+                    lista_clientes_controller.obtener_listas()
+                    nombre_lista = input("Ingrese el nombre de la lista: ")
+                    campana_controller.asignar_lista_clientes(nombre_campana, nombre_lista)
+                elif opcion == "3":
+                    nombre_campana = input("Ingrese el nombre de la campana: ")
+                    mail_controller.listar_mails()
+                    nombre_mail = input("Ingrese el nombre del mail: ")
+                    campana_controller.asignar_mail(nombre_campana, nombre_mail)
+                elif opcion == "4":
+                    campana_controller.listar_campanas()
+                    nombre_campana = input("Ingrese el nombre de la campana: ")
+                    campana_controller.enviar_campana(nombre_campana)
+                elif opcion == "5":
+                    break
+                else:
+                    print("Opcion invalida")
+        elif opcion == "6":
+            while True:
+                menu_mails()
+                opcion = input("Ingrese una opcion: ")
+                if opcion == "1":
+                    asunto = input("Ingrese el asunto del mail: ")
+                    cuerpo = input("Ingrese el cuerpo del mail: ")
+                    mail_controller.crear_mail(asunto, cuerpo)
+                elif opcion == "2":
+                    mail_controller.listar_mails()
+                elif opcion == "3":
+                    break
+                else:
+                    print("Opcion invalida")
+        elif opcion == "7":
+            break
+        else:
+            print("Opcion invalida")
 
-# # Agregamos algunos clientes
-# cliente_controller.agregar_cliente("Juan", "juan@gmail.com", "23/10/1990", "av. siempre viva 123","M")
-# cliente_controller.agregar_cliente("Pedro", "pedro@gmail.com", "4/10/1990", "av. siempre viva 125","M")
 
 
 
-# # Agregamos algunos atributos
-# atributo_controller.agregar_atributo("A", "Atributo A")
-# atributo_controller.agregar_atributo("B", "Atributo B")
-
-
-# # Asignamos atributos a los clientes
-# cliente_atributo_controller.agregar_atributo_cliente("juan@gmail.com", ["A", "B"])
-# cliente_atributo_controller.agregar_atributo_cliente("pedro@gmail.com", ["A"])
-
-
-# # Creamos una lista de clientes
-# lista_clientes_controller.crear_lista("Lista A", "Lista de clientes con atributo A", ["A"])
-# lista_clientes_controller.crear_lista("Lista B", "Lista de clientes con atributo B", ["B"])
-
-
-
-# # Creamos algunos correos
-# mail_controller.crear_mail("Oferta para A", "Oferta de A")
-# mail_controller.crear_mail("Oferta para B", "Oferta de B")
-
-
-
-# #Crear campana
-# campana_controller.crear_campana("Campana A", "Campana para clientes con atributo A")
-# campana_controller.crear_campana("Campana B", "Campana para clientes con atributo B")
-
-# #Agregar lista de clientes a campana
-# campana_controller.asignar_lista_clientes("Campana A", "Lista A")
-# campana_controller.asignar_lista_clientes("Campana B", "Lista B")
-
-# #Agregar mail a campana
-# campana_controller.asignar_mail("Campana A", "Oferta para A")
-# campana_controller.asignar_mail("Campana B", "Oferta para B")
 
 # #Enviar campana
 # campana_controller.enviar_campana("Campana A")
