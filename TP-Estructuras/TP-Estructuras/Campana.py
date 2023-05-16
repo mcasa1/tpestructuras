@@ -7,26 +7,26 @@ import array as array
 
 # Clase Campana
 class Campana(ListaContactos, Mail):
-    def __init__(self, nombre_campana, descripcion, lista_clientes, mail):
+    def __init__(self, nombre_campana, descripcion, ID_lista_clientes, asunto):
         self.nombre_campana = nombre_campana
         self.descripcion = descripcion
-        ListaContactos.__init__(self, lista_clientes)
-        Mail.__init__(self, mail)
+        ListaContactos.__init__(self, ID_lista_clientes)
+        Mail.__init__(self, asunto)
 
 class CampanaController:
 
     campanas = [] 
         
     # Metodo para crear una campana
-    def crear_campana(self, nombre_campana, descripcion, lista_clientes, mail):
-        campana = Campana(nombre_campana, descripcion, lista_clientes, mail)
+    def crear_campana(self, nombre_campana, descripcion, ID_lista_clientes, asunto):
+        campana = Campana(nombre_campana, descripcion, ID_lista_clientes, asunto)
         Campana_model.Post_campana(campana)
 
     def obtener_campanas(nombre_campana = None) -> list:
         campanas = []
         datos = Campana_model.getCampanas(nombre_campana)
         for dato in datos:
-            value = Campana(dato[1], dato[2],fechaCreacion = dato[3],ID_lista_contactos = dato[0])
+            value = Campana(dato[0], dato[1],ID_lista_contactos = dato[2], asunto = dato[3])
             campanas.append(value)
         return campanas
         
