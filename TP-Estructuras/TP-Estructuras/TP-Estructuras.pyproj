@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>fa1d8b61-aed5-4c22-93c0-9c6f1070e44e</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>ListaContactos.py</StartupFile>
+    <StartupFile>TP_Estructuras.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,6 +25,7 @@
     <Compile Include="Atributos.py" />
     <Compile Include="Conectores_BD.py" />
     <Compile Include="Contacto.py" />
+    <Compile Include="Brevo.py" />
     <Compile Include="ListaContactos.py" />
     <Compile Include="Login.py" />
     <Compile Include="plataformaconvalidadores.py" />

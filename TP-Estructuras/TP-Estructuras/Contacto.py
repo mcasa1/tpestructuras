@@ -3,6 +3,8 @@ import time
 from Conectores_BD import *
 from Atributos import *
 import array as array
+from Brevo import *
+from TP_Estructuras import ContactosMenu
 
 # Clase contacto
 class Contacto:
@@ -14,9 +16,9 @@ class Contacto:
         self.direccion = direccion
         self.sexo = sexo
         self.oculto = 1
-    
     def __str__(self):
         return "ID: {}, Nombre: {}, Email: {}, Fecha de nacimiento: {}, Direccion: {}, Sexo: {}".format(self.id, self.nombre, self.email, self.fecha_nacimiento, self.direccion, self.sexo)
+    
 
     def validar_nombre(nombre: str) -> bool:
         if nombre.isalpha():
@@ -69,6 +71,9 @@ class Contacto_Controller:
     # Metodo para agregar un contacto con id unico
     def agregar_contacto(nombre, email, fecha_nacimiento, direccion, sexo):
         contacto = Contacto(nombre, email, fecha_nacimiento, direccion, sexo)
+        brevo = Brevo()
+        id_contacto = brevo.post_contacto(contacto)
+        contacto.id = id_contacto
         Contacto_Model.Post_contacto(contacto)
     
     # Metodo para imprimir los contactos no ocultos con parametro
@@ -107,7 +112,7 @@ class Contacto_Model:
         cnxn = MySql.raw_connection()
             
         #Qwery
-        qwery = "INSERT INTO CONTACTOS (NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO) VALUES ('{}','{}','{}','{}','{}')".format(contacto.nombre, contacto.fecha_nacimiento, contacto.email, contacto.direccion, contacto.sexo)
+        qwery = "INSERT INTO CONTACTOS (ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO) VALUES ('{}','{}','{}','{}','{}','{}')".format(contacto.id,contacto.nombre, contacto.fecha_nacimiento, contacto.email, contacto.direccion, contacto.sexo)
 
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
@@ -120,7 +125,7 @@ class Contacto_Model:
         MySql = Conectores_BD.conector_mysql()
                 
         #Qwery
-        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS LEFT JOIN ATRIBUTOS_CONTACTO ON CONTACTOS.ID_CONTACTO = ATRIBUTOS_CONTACTO.ID_CONTACTO"
+        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS LEFT JOIN ATRIBUTOS_CONTACTO"
         
         qa = array("b", [0,0,0,0,0,0,0,0])
         
