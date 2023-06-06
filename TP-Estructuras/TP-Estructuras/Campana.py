@@ -1,32 +1,33 @@
 import re
 import time
+from datetime import datetime
 from Conectores_BD import *
 from ListaContactos import *
-from Mail import *
 import array as array
 
 # Clase Campana
-class Campana(ListaContactos, Mail):
-    def __init__(self, nombre_campana, descripcion, ID_lista_clientes, asunto):
+class Campana(ListaContactos):
+    def __init__(self, nombre_campana, descripcion, fecha, ID_lista_clientes, id_mail):
         self.nombre_campana = nombre_campana
         self.descripcion = descripcion
+        self.fecha = datetime.strptime(fecha, '%Y-%m-%d %H:%M:%S')
         ListaContactos.__init__(self, ID_lista_clientes)
-        Mail.__init__(self, asunto)
+        self.id_mail = id_mail
 
 class CampanaController:
 
     campanas = [] 
         
     # Metodo para crear una campana
-    def crear_campana(self, nombre_campana, descripcion, ID_lista_clientes, asunto):
-        campana = Campana(nombre_campana, descripcion, ID_lista_clientes, asunto)
+    def crear_campana(self, nombre_campana, descripcion, fecha, ID_lista_clientes, id_mail):
+        campana = Campana(nombre_campana, descripcion, fecha, ID_lista_clientes, id_mail)
         Campana_model.Post_campana(campana)
 
     def obtener_campanas(nombre_campana = None) -> list:
         campanas = []
         datos = Campana_model.getCampanas(nombre_campana)
         for dato in datos:
-            value = Campana(dato[0], dato[1],ID_lista_contactos = dato[2], asunto = dato[3])
+            value = Campana(dato[0], dato[1], fecha = dato[2], ID_lista_contactos = dato[3], id_mail = dato[4])
             campanas.append(value)
         return campanas
         
@@ -40,7 +41,7 @@ class Campana_model:
         cnxn = MySql.raw_connection()
             
         #Qwery
-        qwery = "INSERT INTO CAMPANAS (NOMBRE_CAMPANA, DESCRIPCION, LISTA_CLIENTES, MAIL) VALUES ('{}','{}','{}','{}')".format(campana.nombre, campana.descripcion, campana.lista_clientes, campana.mail)
+        qwery = "INSERT INTO CAMPAÑAS (NOMBRE_CAMPAÑA, DESCRIPCION_CAMPAÑA, FECHA_ENVIO, ID_LISTA_CONTACTOS, ID_MAIL) VALUES ('{}','{}','{}','{}','{}')".format(campana.nombre, campana.descripcion, campana.fecha, campana.lista_clientes, campana.id_mail)
 
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
@@ -52,10 +53,10 @@ class Campana_model:
         MySql = Conectores_BD.conector_mysql()
                 
         #Qwery
-        qwery = "SELECT nombre_campana, descripcion, LISTA_CLIENTES, MAIL FROM `CAMPANAS`"
+        qwery = "SELECT NOMBRE_CAMPAÑA, DESCRIPCION_CAMPAÑA, FECHA_ENVIO, ID_LISTA_CONTACTOS, ID_MAIL FROM `CAMPAÑAS`"
 
         if nombre_campana != None:
-            optionalWhere = " WHERE nombre_campana = '{}'".format(nombre_campana)
+            optionalWhere = " WHERE NOMBRE_CAMPAÑA = '{}'".format(nombre_campana)
             qwery = qwery + optionalWhere
 
         #Ejecuto el comando y guardo cambios
