@@ -93,6 +93,25 @@ WHERE CONTACTOS.CONTACTO_HABILITACION = 1;
             conn.commit()
             result = conn.execute(text(qwery))
         return result
+    
+def getListaContactos_atributos(id_atributo):
+
+        MySql = Conectores_BD.conector_mysql()
+                
+        #Qwery
+        qwery = """SELECT ID_CONTACTO
+FROM CONTACTOS
+	INNER JOIN ATRIBUTOS_CONTACTOS ON 
+    	CONTACTOS.ID_CONTACTO = ATRIBUTOS_CONTACTOS.ID_CONTACTO
+WHERE ATRIBUTOS_CONTACTOS.ID_ATRIBUTO = {}'""".format(id_atributo)
+
+
+         #Ejecuto el comando y guardo cambios
+        with MySql.connect() as conn:
+            conn.execute(text(qwery))
+            conn.commit()
+            result = conn.execute(text(qwery))
+        return result
 
 class ListaContactosController:
 # Devuleve los datos generales de una lista de contactos. Nombre, descripcion y fecha de creacion Y devuelve datos de los contactos asignados en
