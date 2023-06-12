@@ -37,7 +37,7 @@ class ListaContactosModel():
         MySql = Conectores_BD.conector_mysql()
         
         #Qwery
-        qwery = "INSERT INTO `LISTA_CONTACTOS` (`NOMBRE_LISTA_CONTACTOS`, `DESCRIPCION_LISTA_CONTACTOS`) VALUES ('{}','{}')".format(lista_contactos.nombre_lista_contacto, lista_contactos.descripcion_lista_contacto)
+        qwery = "INSERT INTO `LISTA_CONTACTOS` (`ID_LISTA_CONTACTOS`,`NOMBRE_LISTA_CONTACTOS`, `DESCRIPCION_LISTA_CONTACTOS`) VALUES ('{}','{}','{}')".format(lista_contactos.ID_lista_contactos,lista_contactos.nombre_lista_contacto, lista_contactos.descripcion_lista_contacto)
 
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
@@ -93,25 +93,25 @@ WHERE CONTACTOS.CONTACTO_HABILITACION = 1;
             conn.commit()
             result = conn.execute(text(qwery))
         return result
-    
-def getListaContactos_atributos(id_atributo):
 
-        MySql = Conectores_BD.conector_mysql()
+    def getListaContactos_atributos(id_atributo):
+
+            MySql = Conectores_BD.conector_mysql()
                 
-        #Qwery
-        qwery = """SELECT ID_CONTACTO
-FROM CONTACTOS
-	INNER JOIN ATRIBUTOS_CONTACTOS ON 
-    	CONTACTOS.ID_CONTACTO = ATRIBUTOS_CONTACTOS.ID_CONTACTO
-WHERE ATRIBUTOS_CONTACTOS.ID_ATRIBUTO = {}'""".format(id_atributo)
+            #Qwery
+            qwery = """SELECT ID_CONTACTO
+    FROM CONTACTOS
+	    INNER JOIN ATRIBUTOS_CONTACTOS ON 
+    	    CONTACTOS.ID_CONTACTO = ATRIBUTOS_CONTACTOS.ID_CONTACTO
+    WHERE ATRIBUTOS_CONTACTOS.ID_ATRIBUTO = {}'""".format(id_atributo)
 
 
-         #Ejecuto el comando y guardo cambios
-        with MySql.connect() as conn:
-            conn.execute(text(qwery))
-            conn.commit()
-            result = conn.execute(text(qwery))
-        return result
+             #Ejecuto el comando y guardo cambios
+            with MySql.connect() as conn:
+                conn.execute(text(qwery))
+                conn.commit()
+                result = conn.execute(text(qwery))
+            return result
 
 class ListaContactosController:
 # Devuleve los datos generales de una lista de contactos. Nombre, descripcion y fecha de creacion Y devuelve datos de los contactos asignados en
@@ -140,6 +140,9 @@ class ListaContactosController:
 #Crea una lista de contactos sin contactos asignados
     def crear_lista_contactos(nombre_lista_contacto, descripcion_lista_contacto):
         lista = ListaContactos(nombre_lista_contacto, descripcion_lista_contacto)
+        brevo = Brevo_contactos()
+        id_lista = brevo.post_lista_contactos(lista)
+        lista.ID_lista_contactos = id_lista.id
         ListaContactosModel.postListaContactos(lista)
 #A partir de un objeto ListaContactos, agrega todos los contactos que esten en el atributo .Contactos []
 # a la tabla CONTACTOS_LISTA_CONTACTOS de la bd
@@ -152,6 +155,13 @@ class ListaContactosController:
         df['ID_LISTA_CONTACTOS'] = lista_contactos.Id_lista
 
         ListaContactosModel.addContactos(df)
+
+        #llamar a la funcion post_contactos_form_lista_contactos de brevo en baches de 150 contactos
+        #para no superar el limite de 150 contactos por llamada
+        brevo = Brevo_contactos()
+        for i in range(0,len(lista_contactos.Contactos),150):
+            brevo.post_contactos_form_lista_contactos(lista_contactos.ID_lista_contactos, lista_contactos.Contactos[i:i+150])
+
 # Devuleve los datos generales de una lista de contactos. Nombre, descripcion y fecha de creacion. No devuelve datos de contactos
 # Si no se especifica un nombre de ListaContatos, devuelve todos. 
     def obtener_lista_contactos_datos(nombreListaContactos = None) -> list:
@@ -170,7 +180,7 @@ class ListaContactosController:
 #ListaContactosController.crear_lista_contactos('+18/volley','Lista con los contactos que les interesa el volley y son mayores de edad')
 #ListaContactosController.crear_lista_contactos('+18/tenis','Lista con los contactos que les interesa el tenis y son mayores de edad')
 #ListaContactosController.crear_lista_contactos('+18/handball','Lista con los contactos que les interesa el handball y son mayores de edad')
-#ListaContactosController.crear_lista_contactos('+18/boxeo','Lista con los contactos que les interesa el boxeo y son mayores de edad')
+#ListaContactosController.crear_lista_contactos('prueba1','prueba1 prueba1 prueba1 prueba1 prueba1')
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 #a = ListaContactosController.obtener_lista_contactos_datos('+18/futbol')
