@@ -4,11 +4,13 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 from pprint import pprint
 
+api_key = ""
+
 class Brevo_contactos:
     def __init__(self):
         # Configure API key authorization: api-key
         self.configuration = sib_api_v3_sdk.Configuration()
-        self.configuration.api_key['api-key'] = ""
+        self.configuration.api_key['api-key'] = api_key
 
         # create an instance of the API class
         self.api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(self.configuration))
@@ -103,7 +105,7 @@ class Brevo_campañas:
     def __init__(self):
         # Configure API key authorization: api-key
         self.configuration = sib_api_v3_sdk.Configuration()
-        self.configuration.api_key['api-key'] = "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"
+        self.configuration.api_key['api-key'] = api_key
 
         # create an instance of the API class
         self.api_instance = sib_api_v3_sdk.EmailCampaignsApi(sib_api_v3_sdk.ApiClient(self.configuration))
