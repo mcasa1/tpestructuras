@@ -4,11 +4,10 @@ from Conectores_BD import *
 from Atributos import *
 import array as array
 from Brevo import *
-from TP_Estructuras import ContactosMenu
 
 # Clase contacto
 class Contacto:
-    def __init__(self, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, id=None):
+    def __init__(self, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, id=None, atributos:list=None):
         self.id = id
         self.nombre = nombre
         self.email = email
@@ -16,6 +15,7 @@ class Contacto:
         self.direccion = direccion
         self.sexo = sexo
         self.oculto = 1
+        self.atributos = atributos
     def __str__(self):
         return "ID: {}, Nombre: {}, Email: {}, Fecha de nacimiento: {}, Direccion: {}, Sexo: {}".format(self.id, self.nombre, self.email, self.fecha_nacimiento, self.direccion, self.sexo)
     
@@ -62,7 +62,6 @@ class Contacto:
     def validar(self, key: str, data: str) -> bool:
         return self.validar_dicc[key](data)
 
-
 # Clase para manejar los contactos
 class Contacto_Controller:
 
@@ -73,7 +72,7 @@ class Contacto_Controller:
         contacto = Contacto(nombre, email, fecha_nacimiento, direccion, sexo)
         brevo = Brevo()
         id_contacto = brevo.post_contacto(contacto)
-        contacto.id = id_contacto
+        contacto.id = id_contacto.id
         Contacto_Model.Post_contacto(contacto)
     
     # Metodo para imprimir los contactos no ocultos con parametro
@@ -119,51 +118,33 @@ class Contacto_Model:
             conn.execute(text(qwery))
             conn.commit()
 
-    def listar_contactos(contacto, edaddesde, edadhasta, atributo):
+    def listar_contactos(contacto, edad_desde, edad_hasta, atributo, habilitado: bool):
         atributo = Atributo()
         #Conector
         MySql = Conectores_BD.conector_mysql()
                 
         #Qwery
-        qwery = "SELECT ID_CONTACTO, NOMBRE_CONTACTO, FECHA_NACIMIENTO, EMAIL, DIRECCION, SEXO FROM CONTACTOS LEFT JOIN ATRIBUTOS_CONTACTO"
-        
-        qa = array("b", [0,0,0,0,0,0,0,0])
+        qwery = """ SELECT 
+                        ID_CONTACTO,
+                        NOMBRE_CONTACTO,    
+                        FECHA_NACIMIENTO,
+                        EMAIL,
+                        DIRECCION,
+                        SEXO 
+                    FROM CONTACTOS 
+                        LEFT JOIN ATRIBUTOS_CONTACTO ON 
+                    WHERE CONTACTO_HABILITACION = {} """.format(habilitado)
+                
         
         if contacto.id != None:
-            qa.insert(0,1)
+            optionalwhere = "AND ID_CONTACTO = '{}' ".format(contacto.id)
+            qwery = qwery + optionalwhere
+        
+                
         if contacto.nombre != None:
-            qa.insert(1,1)
-        if contacto.fecha_nacimiento != None:
-            qa.insert(2,1)
-        if contacto.email != None:
-            qa.insert(3,1)
-        if contacto.direccion != None:
-            qa.insert(4,1)
-        if contacto.sexo != None:
-            qa.insert(5,1)
-        if edaddesde and edadhasta!= None:
-            qa.insert(6,1)
-        if atributo.ID_atributo != None:
-            qa.insert(7,1)
-        
-        if contacto.id != None or contacto.nombre!= None or contacto.fecha_nacimiento != None or contacto.email != None or contacto.direccion != None or contacto.sexo or edaddesde != None or edadhasta != None:
-            qwery = qwery + "WHERE"
-        
-        if contacto.id != None:
-            if qa[0] == 1 and 1 not in qa[1:]:
-                optionalwhere = "ID_CONTACTO = '{}' ".format(contacto.id)
-                qwery = qwery + optionalwhere
-            else:
-                optionalwhere = "ID_CONTACTO = '{}' AND".format(contacto.id)
-                qwery = qwery + optionalwhere
+            optionalwhere = "NOMBRE_CONTACTO = '{}'".format(contacto.nombre)
+            qwery = qwery + optionalwhere
 
-        if contacto.nombre != None:
-            if qa[1] == 1 and 1 not in qa[2:]:
-                optionalwhere = "NOMBRE_CONTACTO = '{}'".format(contacto.nombre)
-                qwery = qwery + optionalwhere
-            else:
-                optionalwhere = "NOMBRE_CONTACTO = '{}' AND".format(contacto.nombre)
-                qwery = qwery + optionalwhere
         
         if contacto.fecha_nacimiento != None:
             if qa[2] == 1 and 1 not in qa[3:]:
@@ -197,12 +178,12 @@ class Contacto_Model:
                 optionalwhere = "SEXO = '{}' AND".format(contacto.sexo)
                 qwery = qwery + optionalwhere
         
-        if edaddesde != None and edadhasta != None:
+        if edad_desde != None and edad_hasta != None:
             if qa[6] == 1 and 1 not in qa[7:]:
-                optionalwhere = "(SELECT DATEDIFF(CURDATE() ,FECHA_NACIMIENTO)) BETWEEN '{}' AND '{}'".format(edaddesde, edadhasta)
+                optionalwhere = "(SELECT DATEDIFF(CURDATE() ,FECHA_NACIMIENTO)) BETWEEN '{}' AND '{}'".format(edad_desde, edad_hasta)
                 qwery = qwery + optionalwhere
             else:
-                optionalwhere = "(SELECT DATEDIFF(CURDATE() ,FECHA_NACIMIENTO)) BETWEEN '{}' AND '{}' AND".format(edaddesde, edadhasta)
+                optionalwhere = "(SELECT DATEDIFF(CURDATE() ,FECHA_NACIMIENTO)) BETWEEN '{}' AND '{}' AND".format(edad_desde, edad_hasta)
                 qwery = qwery + optionalwhere
             
         if atributo.ID_atributo != None:
@@ -246,8 +227,18 @@ class Contacto_Model:
             conn.execute(text(qwery))
             conn.commit()
 
-Contacto_Controller.agregar_contacto("Lucas", "lucas@gmail.com", "1234/02/12", "remo 123", 0)
+
+
+
+#   TEST --- TEST --- TEST --- TEST --- TEST --- TEST --- TEST --- TEST --- TEST --- TEST --- TEST --- TEST
+
+
+#Contacto_Controller.agregar_contacto("Lucas", "lucas12@gmail.com", "1234/02/12", "remo 123", 0)
 
 # Contacto_Controller.ocultar_contacto_control("tomas@gmail.com")
 
 # Contacto_Controller.obtener_contactos_todos()
+
+#api = Brevo()
+#lucas = Contacto(id=7, email="lucas12@gmail.com",nombre = 'lucas')
+#api.update_contacto(lucas)
