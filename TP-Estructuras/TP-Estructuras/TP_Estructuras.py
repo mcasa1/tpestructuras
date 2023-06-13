@@ -251,7 +251,6 @@ class GestionarAtributosClientes(tk.Frame):
                     cursor='hand2',
                     command=lambda: GestionarAtributosClientes.Eliminar_Atributo(self)).pack(side='bottom', fill='x')
 
-        
         #BOTON AGREGAR ATRIBUTO
         tk.Button(self,
                     text='Agregar',
@@ -272,22 +271,33 @@ class GestionarAtributosClientes(tk.Frame):
         tkinterStyles.estiloTabla()
 
         tree = ttk.Treeview(self, show='headings', columns=['ID_ATRIBUTO','ATRIBUTO_DESCRIPCION'], style= "mystyle.Treeview")
-        tree.heading('ID_ATRIBUTO', text='ID ATRIBUTO')
-        tree.heading('ATRIBUTO_DESCRIPCION', text='ATRIBUTO DESCRIPCION')
+        tree.heading('ID_ATRIBUTO', text='ID DE ATRIBUTO')
+        tree.heading('ATRIBUTO_DESCRIPCION', text='DESCRIPCION')
 
+        GestionarAtributosClientes.obtener_atributos(tree)
+
+        #BOTON ACTUALIZAR
+        tk.Button(self,
+                    text='Actualizar',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: GestionarAtributosClientes.obtener_atributos(tree)).pack(side='bottom', fill='x')
+    def obtener_atributos(tree):
+        for i in tree.get_children():
+            tree.delete(i)
         lista_atributos = AtributosController.obtener_atributos()
 
         for row in lista_atributos:
             tree.insert('',tk.END ,values=[row.ID_atributo,row.AtributoDescripcion])
-        tree.pack(side='top', fill='both')
+            tree.pack(side='top', fill='both')
     def Agregar_Atributo(self):
         window = AgregarAtributo(self)
         window.grab_set()
     def Eliminar_Atributo(self):
         window = EliminarAtributo(self)
         window.grab_set()         
-
-
 class GestionarListasClientes(tk.Frame):
     def __init__(self, container,controller,*args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -320,7 +330,6 @@ class GestionarListasClientes(tk.Frame):
                     command=lambda:controller.show_frame( HomeView )).pack(side='bottom', fill='x')
 
 # SUBCAPA GestorMail
-
 
 # SUBCAPA GestorCampañas
 
@@ -372,7 +381,6 @@ class AgregarAtributo(tk.Toplevel):
     def open_CargaError(self):
            window = CargaError(self)
            window.grab_set()    
-
 class EliminarAtributo(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -411,9 +419,9 @@ class EliminarAtributo(tk.Toplevel):
     def delete_atributo(self,nombre_atributo):
         try:
             AtributosController.eliminar_atributo(nombre_atributo)
-            AgregarAtributo.open_EliminadoExitoso(self)
+            EliminarAtributo.open_EliminadoExitoso(self)
         except:
-            AgregarAtributo.open_EliminadoError(self)
+            EliminarAtributo.open_EliminadoError(self)
 
     def open_EliminadoExitoso(self):
            window = EliminadoExitoso(self)
