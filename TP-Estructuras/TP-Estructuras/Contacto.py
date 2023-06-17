@@ -69,17 +69,15 @@ class Contacto_Controller():
     contactos = []
 
     # Metodo para agregar un contacto con id unico
-    def agregar_contacto(nombre, email, fecha_nacimiento, direccion, sexo):
-        contacto = Contacto(nombre, email, fecha_nacimiento, direccion, sexo)
+    def agregar_contacto(newContact: Contacto):
         brevo = Brevo_contactos()
-        id_contacto = brevo.post_contacto(contacto)
-        contacto.id = id_contacto.id
-        Contacto_Model.Post_contacto(contacto)
+        id_contacto = brevo.post_contacto(newContact)
+        newContact.id = id_contacto.id
+        Contacto_Model.Post_contacto(newContact)
     
     # Metodo para imprimir los contactos no ocultos con parametro
-    def obtener_contactos(id, nombre, email, fecha_nacimiento, direccion, sexo):
-        contacto = Contacto(id, nombre, email, fecha_nacimiento, direccion, sexo)
-        datos = Contacto_Model.listar_contactos(contacto)
+    def obtener_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo):
+        datos = Contacto_Model.listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo)
         for dato in datos:
             contacto_devuelto = Contacto(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5])
             contactos = contactos.append(contacto_devuelto)
@@ -113,7 +111,7 @@ class Contacto_Model:
             conn.execute(text(qwery))
             conn.commit()
 
-    def listar_contactos(contacto, edad_desde, edad_hasta, atributo, habilitado: bool):
+    def listar_contactos(contacto=None, edad_desde=None, edad_hasta=None, atributo=None, habilitado: bool=1):
         atributo = Atributo()
         #Conector
         MySql = Conectores_BD.conector_mysql()
