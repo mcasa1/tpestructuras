@@ -7,8 +7,8 @@ from Brevo import *
 
 # Clase contacto
 class Contacto:
-    def __init__(self, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, id=None, atributos:list=[]):
-        self.id = id
+    def __init__(self, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, id_contacto=None, atributos:list=[]):
+        self.id_contacto = id_contacto
         self.nombre = nombre
         self.email = email
         self.fecha_nacimiento = fecha_nacimiento
@@ -76,18 +76,26 @@ class Contacto_Controller():
         Contacto_Model.Post_contacto(newContact)
     
     # Metodo para imprimir los contactos no ocultos con parametro
-    def obtener_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo):
-        datos = Contacto_Model.listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo)
+    def obtener_contactos_params(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo):
+        contacto = Contacto(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo)
+        datos = Contacto_Model.listar_contactos(contacto)
         for dato in datos:
             contacto_devuelto = Contacto(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5])
             contactos = contactos.append(contacto_devuelto)
         return contactos
 
+    # Metodo para imprimir los contactos con parametro
+    def obtener_contactos(habilitado,id_contacto=None, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None):
+        datos = Contacto_Model.listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, habilitado)
+        resultados = []
+        for dato in datos:
+            contacto_devuelto = Contacto(id_contacto=dato[0], nombre=dato[1], fecha_nacimiento=dato[2], email=dato[3], direccion=dato[4], sexo=dato[5])
+            resultados.append(contacto_devuelto)
+        return resultados
+
     # Metodo para ocultar un contacto
-    def ocultar_contacto_control(email):
-        contacto = Contacto()
-        contacto.email = email
-        Contacto_Model.ocultar_contacto(contacto)
+    def ocultar_contacto(email):
+        Contacto_Model.ocultar_contacto(Contacto(email=email))
 
     #Metodo para vincular atributos a un contacto
     def agregar_atributos_contacto(contacto):
@@ -110,8 +118,7 @@ class Contacto_Model:
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()
-
-    def listar_contactos(contacto=None, edad_desde=None, edad_hasta=None, atributo=None, habilitado: bool=1):
+    def listar_contactos_buscador(contacto, edad_desde, edad_hasta, atributo, habilitado):
         atributo = Atributo()
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -168,20 +175,61 @@ class Contacto_Model:
             conn.commit()
             result = conn.execute(text(qwery))
         return result
+    def listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, habilitado):
+        #Conector
+        MySql = Conectores_BD.conector_mysql()
+                
+        #Qwery
+        qwery = """ SELECT 
+                        ID_CONTACTO,
+                        NOMBRE_CONTACTO,    
+                        FECHA_NACIMIENTO,
+                        EMAIL,
+                        DIRECCION,
+                        SEXO
+                    FROM CONTACTOS 
+                    WHERE CONTACTO_HABILITACION = {} """.format(habilitado)
+                
+        if id_contacto != None:
+            optionalwhere = "AND ID_CONTACTO = '{}' ".format(id_contacto)
+            qwery = qwery + optionalwhere
+                
+        if nombre != None:
+            optionalwhere = "AND NOMBRE_CONTACTO = '{}'".format(nombre)
+            qwery = qwery + optionalwhere
+        
+        if fecha_nacimiento != None:
+                optionalwhere = "AND FECHA_NACIMIENTO = '{}'".format(fecha_nacimiento)
+                qwery = qwery + optionalwhere
+        
+        if email != None:
+                optionalwhere = "AND EMAIL = '{}'".format(email)
+                qwery = qwery + optionalwhere
+        
+        if direccion != None:
+                optionalwhere = "DIRECCION = '{}'".format(direccion)
+                qwery = qwery + optionalwhere
 
-
+        if sexo != None:
+                optionalwhere = "AND SEXO = '{}'".format(sexo)
+                qwery = qwery + optionalwhere           
+        
+        #Ejecuto el comando y guardo cambios
+        with MySql.connect() as conn:
+            conn.execute(text(qwery))
+            conn.commit()
+            result = conn.execute(text(qwery))
+        return result
     def ocultar_contacto(contacto):
         #Conector
         MySql = Conectores_BD.conector_mysql()
         
         #Qwery
         qwery = "UPDATE CONTACTOS SET CONTACTO_HABILITACION = 0 WHERE EMAIL = '{}'".format(contacto.email)
-        
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()
-
     def Post_atributos_contacto(contacto: Contacto):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -199,18 +247,13 @@ class Contacto_Model:
 
 
 #Contacto_Controller.agregar_contacto("Lucas", "lucas12@gmail.com", "1234/02/12", "remo 123", 0)
-
 # Contacto_Controller.ocultar_contacto_control("tomas@gmail.com")
-
 # Contacto_Controller.obtener_contactos_todos()
-
 #api = Brevo()
 ##lucas = Contacto(id=7, email="lucas12@gmail.com",nombre = 'lucas')
 ##api.update_contacto(lucas)
-
 #contacto = Contacto(id=7)
 #atributo = Atributo(ID_atributo=18)
 ## atributo = 2
-
 #contacto.atributos.append(atributo)
 #Contacto_Controller.agregar_atributos_contacto(contacto)
