@@ -1,15 +1,15 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
-
+from credenciales import *
 class Conectores_BD:
  
     #MySql CotyApp -- MySql CotyApp -- MySql CotyApp
     
     def conector_mysql():
-        user='Tp-Estructuras'
-        password='Estructuras-ITBA-2023'
-        server = '200.68.105.168'
-        database = 'EstructuraDeDatos'
+        user= credenciales.sql.get('user')
+        password=credenciales.sql.get('password')
+        server = credenciales.sql.get('server')
+        database = credenciales.sql.get('database')
         cnxn = create_engine('mysql+pymysql://'+ user +':'+ password +'@'+ server +'/'+ database)   
         return cnxn
     

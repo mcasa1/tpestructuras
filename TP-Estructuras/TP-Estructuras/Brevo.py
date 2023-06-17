@@ -3,8 +3,9 @@ from __future__ import print_function
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 from pprint import pprint
+from credenciales import *
 
-api_key = ""
+api_key = credenciales.api_key
 
 class Brevo_contactos:
     def __init__(self):

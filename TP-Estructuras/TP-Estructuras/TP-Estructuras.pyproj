@@ -26,6 +26,7 @@
     <Compile Include="Conectores_BD.py" />
     <Compile Include="Contacto.py" />
     <Compile Include="Brevo.py" />
+    <Compile Include="credenciales.py" />
     <Compile Include="ListaContactos.py" />
     <Compile Include="Login.py" />
     <Compile Include="plataformaconvalidadores.py" />
@@ -34,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.11" />
+    <InterpreterReference Include="Global|PythonCore|3.9" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

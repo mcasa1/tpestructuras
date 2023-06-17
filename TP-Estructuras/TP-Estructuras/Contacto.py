@@ -207,12 +207,12 @@ class Contacto_Model:
 # Contacto_Controller.obtener_contactos_todos()
 
 #api = Brevo()
-#lucas = Contacto(id=7, email="lucas12@gmail.com",nombre = 'lucas')
-#api.update_contacto(lucas)
+##lucas = Contacto(id=7, email="lucas12@gmail.com",nombre = 'lucas')
+##api.update_contacto(lucas)
 
-contacto = Contacto(id=7)
-atributo = Atributo(ID_atributo=18)
-# atributo = 2
+#contacto = Contacto(id=7)
+#atributo = Atributo(ID_atributo=18)
+## atributo = 2
 
-contacto.atributos.append(atributo)
-Contacto_Controller.agregar_atributos_contacto(contacto)
+#contacto.atributos.append(atributo)
+#Contacto_Controller.agregar_atributos_contacto(contacto)
