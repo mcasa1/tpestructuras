@@ -29,8 +29,6 @@
     <Compile Include="credenciales.py" />
     <Compile Include="ListaContactos.py" />
     <Compile Include="Login.py" />
-    <Compile Include="plataformaconvalidadores.py" />
-    <Compile Include="plataformasimplificada.py" />
     <Compile Include="TP_Estructuras.py" />
   </ItemGroup>
   <ItemGroup>
