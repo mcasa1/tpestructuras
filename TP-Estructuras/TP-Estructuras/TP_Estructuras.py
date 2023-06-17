@@ -323,7 +323,7 @@ class AgregarContacto(tk.Toplevel):
         dia = date.today().day
         mes = date.today().month
         año = date.today().year
-        calendario = Calendar(self, date_pattern='yyyy-mm-dd', selectmode = 'day',year = año, month = mes, day = dia)
+        calendario = Calendar(self,locale='es_ES' ,date_pattern='y-mm-dd', selectmode = 'day',year = año, month = mes, day = dia)
         calendario.pack(fill='x',side='top')
 
         # LABEL DIRECCION
