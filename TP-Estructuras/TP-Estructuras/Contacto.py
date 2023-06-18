@@ -66,8 +66,6 @@ class Contacto:
 # Clase para manejar los contactos
 class Contacto_Controller():
 
-    contactos = []
-
     # Metodo para agregar un contacto con id unico
     def agregar_contacto(newContact: Contacto):
         brevo = Brevo_contactos()
@@ -76,13 +74,13 @@ class Contacto_Controller():
         Contacto_Model.Post_contacto(newContact)
     
     # Metodo para imprimir los contactos no ocultos con parametro
-    def obtener_contactos_params(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo):
-        contacto = Contacto(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo)
-        datos = Contacto_Model.listar_contactos(contacto)
+    def obtener_contactos_params(habilitado, id_contacto=None, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, edad_desde=None, edad_hasta=None, atributo=list):
+        datos = Contacto_Model.listar_contactos_buscador(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, edad_desde, edad_hasta, atributo, habilitado)
+        resultados = []
         for dato in datos:
-            contacto_devuelto = Contacto(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5])
-            contactos = contactos.append(contacto_devuelto)
-        return contactos
+            contacto_devuelto = Contacto(id_contacto=dato[0], nombre=dato[1], fecha_nacimiento=dato[2], email=dato[3], direccion=dato[4], sexo=dato[5])
+            resultados.append(contacto_devuelto)
+        return resultados
 
     # Metodo para imprimir los contactos con parametro
     def obtener_contactos(habilitado,id_contacto=None, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None):
@@ -118,8 +116,8 @@ class Contacto_Model:
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()
-    def listar_contactos_buscador(contacto, edad_desde, edad_hasta, atributo, habilitado):
-        atributo = Atributo()
+            
+    def listar_contactos_buscador(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, edad_desde, edad_hasta, atributo, habilitado):
         #Conector
         MySql = Conectores_BD.conector_mysql()
                 
@@ -136,28 +134,28 @@ class Contacto_Model:
                     WHERE CONTACTO_HABILITACION = {} """.format(habilitado)
                 
         
-        if contacto.id != None:
-            optionalwhere = "AND ID_CONTACTO = '{}' ".format(contacto.id)
+        if id_contacto != None:
+            optionalwhere = "AND ID_CONTACTO = '{}' ".format(id_contacto)
             qwery = qwery + optionalwhere
                 
-        if contacto.nombre != None:
-            optionalwhere = "AND NOMBRE_CONTACTO = '{}'".format(contacto.nombre)
+        if nombre != None:
+            optionalwhere = "AND NOMBRE_CONTACTO = '{}'".format(nombre)
             qwery = qwery + optionalwhere
         
-        if contacto.fecha_nacimiento != None:
-                optionalwhere = "AND FECHA_NACIMIENTO = '{}'".format(contacto.fecha_nacimiento)
+        if fecha_nacimiento != None:
+                optionalwhere = "AND FECHA_NACIMIENTO = '{}'".format(fecha_nacimiento)
                 qwery = qwery + optionalwhere
         
-        if contacto.email != None:
-                optionalwhere = "AND EMAIL = '{}'".format(contacto.email)
+        if email != None:
+                optionalwhere = "AND EMAIL = '{}'".format(email)
                 qwery = qwery + optionalwhere
         
-        if contacto.direccion != None:
-                optionalwhere = "DIRECCION = '{}'".format(contacto.direccion)
+        if direccion != None:
+                optionalwhere = "DIRECCION = '{}'".format(direccion)
                 qwery = qwery + optionalwhere
 
-        if contacto.sexo != None:
-                optionalwhere = "AND SEXO = '{}'".format(contacto.sexo)
+        if sexo != None:
+                optionalwhere = "AND SEXO = '{}'".format(sexo)
                 qwery = qwery + optionalwhere
         
         if edad_desde != None and edad_hasta != None:
@@ -165,7 +163,7 @@ class Contacto_Model:
                 qwery = qwery + optionalwhere
             
         if atributo.ID_atributo != None:
-            optionalwhere = "AND ID_ATRIBUTO IN '{}'".format(atributo.ID_atributo)
+            optionalwhere = "AND ID_ATRIBUTO IN '{}'".format(atributo)
             qwery = qwery + optionalwhere
             
         
@@ -175,6 +173,7 @@ class Contacto_Model:
             conn.commit()
             result = conn.execute(text(qwery))
         return result
+    
     def listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, habilitado):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -220,6 +219,7 @@ class Contacto_Model:
             conn.commit()
             result = conn.execute(text(qwery))
         return result
+    
     def ocultar_contacto(contacto):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -230,6 +230,7 @@ class Contacto_Model:
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()
+            
     def Post_atributos_contacto(contacto: Contacto):
         #Conector
         MySql = Conectores_BD.conector_mysql()
