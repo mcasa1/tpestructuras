@@ -23,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Atributos.py" />
+    <Compile Include="campana.py" />
     <Compile Include="Conectores_BD.py" />
     <Compile Include="Contacto.py" />
     <Compile Include="Brevo.py" />

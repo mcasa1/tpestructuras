@@ -1,15 +1,16 @@
 from Conectores_BD import *
 from ListaContactos import *
-from Mail import *
 import array as array
 
+
 # Clase Campana
-class Campana(ListaContactos, Mail):
-    def __init__(self, nombre_campana, descripcion, ID_lista_clientes, asunto):
+class Campana(ListaContactos):
+    def __init__(self, nombre_campana, descripcion,fecha_envio,ID_lista_clientes,id_mail):
         self.nombre_campana = nombre_campana
         self.descripcion = descripcion
+        self.fecha_envio = fecha_envio
         ListaContactos.__init__(self, ID_lista_clientes)
-        Mail.__init__(self, asunto)
+        self.id_mail = id_mail
 
 class CampanaController:
 
@@ -50,7 +51,16 @@ class Campana_model:
         MySql = Conectores_BD.conector_mysql()
                 
         #Qwery
-        qwery = "SELECT nombre_campana, descripcion, LISTA_CLIENTES, MAIL FROM `CAMPANAS`"
+        qwery = """SELECT 
+                        ID_CAMPAÑA,
+                        NOMBRE_CAMPAÑA,
+                        DESCRIPCION_CAMPAÑA,
+                        FECHA_ENVIO,
+                        NOMBRE_LISTA_CONTACTOS,
+                        ID_MAIL 
+                    FROM CAMPAÑAS
+                        INNER JOIN LISTA_CONTACTOS ON 
+                            CAMPAÑAS.ID_LISTA_CONTACTOS = LISTA_CONTACTOS.ID_LISTA_CONTACTOS"""
 
         if nombre_campana != None:
             optionalWhere = " WHERE nombre_campana = '{}'".format(nombre_campana)

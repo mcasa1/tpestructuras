@@ -112,12 +112,12 @@ class Brevo_campañas:
         self.api_instance = sib_api_v3_sdk.EmailCampaignsApi(sib_api_v3_sdk.ApiClient(self.configuration))
 
     def post_campaña(self, campaña):
-        sender = {"name": 'senderName', "email": 'sender@domain.com'}
+        sender = {"name": 'EDP - Grupo 2', "email": 'aviscardi@itba.edu.ar'}
         name = campaña.nombre_campana
         template_id= campaña.id_mail
         scheduled_at = campaña.fecha
         subject = campaña.descripcion
-        reply_to = 'replyto@domain.com'
+        reply_to = 'aviscardi@itba.edu.ar'
         recipients = {"listIds": [campaña.ID_lista_contactos]}
         email_campaigns = sib_api_v3_sdk.CreateEmailCampaign(sender=sender, name=name, template_id=template_id, scheduled_at=scheduled_at, subject=subject, reply_to=reply_to, recipients=recipients) # CreateEmailCampaign | Values to create a campaign
 

@@ -6,6 +6,7 @@ from turtle import bgcolor
 from Login import LoginController
 from Atributos import AtributosController
 from Contacto import Contacto_Controller, Contacto
+from campana import CampanaController
 from datetime import *
 
 class tkinterStyles():
@@ -136,7 +137,7 @@ class ContactosMenu(tk.Frame):
                     fg = 'deep pink',
                     font = 'cooper 10',
                     cursor='hand2',
-                    command=lambda:controller.show_frame( GestionarListasClientes )).pack(side='bottom', fill='x')
+                    command=lambda:controller.show_frame( HomeView )).pack(side='bottom', fill='x')
 class MailMenu(tk.Frame):
     def __init__(self, container,controller,*args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -177,12 +178,12 @@ class CampañasMenu(tk.Frame):
         titulo.pack(fill='both',side='top')
 
         tk.Button(self,
-                    text='aaaaa',
+                    text='Campañas',
                     bg = 'white',
                     fg = 'deep pink',
                     font = 'cooper 15',
                     cursor='hand2',
-                    command=lambda:controller.show_frame( SubMenu2MainView )).pack(side='left', fill='both',expand=True)       
+                    command=lambda:controller.show_frame( View_Campañas )).pack(side='left', fill='both',expand=True)       
         tk.Button(self,
                     text='aaaaa',
                     bg = 'white',
@@ -643,6 +644,182 @@ class GestionarListasClientes(tk.Frame):
                     cursor='hand2',
                     command=lambda:controller.show_frame( HomeView )).pack(side='bottom', fill='x')
 
+
+
+# --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
+
+# CAMPAÑAS
+# VISTAS Y POP-UPs DE CAMPAÑAS
+class View_Campañas(tk.Frame):
+    def __init__(self, container,controller,*args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        self.configure(bg = "white")
+
+        #BOTON VOLVER
+        tk.Button(self,
+                    text='Volver',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda:controller.show_frame( ContactosMenu )).pack(side='bottom', fill='x')
+
+        tk.Button(self,
+                    text='Eliminar',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_Campañas.Eliminar_Campaña(self)).pack(side='bottom', fill='x')
+
+        #BOTON AGREGAR ATRIBUTO
+        tk.Button(self,
+                    text='Agregar',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_Campañas.Crear_Campaña(self)).pack(side='bottom', fill='x')
+
+
+        #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Campañas',font = 'cooper 25', fg = 'deep pink')
+        titulo.pack(fill='both',side='top')
+        espacio = tk.Label(self, bg = 'white', text = '  ',font = 'cooper 25', fg = 'deep pink')
+        espacio.pack(fill='both',side='top')
+
+        #CONFIGURACION DE LA TABLA
+        tkinterStyles.estiloTabla()
+
+        tree = ttk.Treeview(self, show='headings', columns=['nombre_campana', 'descripcion', 'LISTA_CLIENTES', 'MAIL'], style= "mystyle.Treeview")
+        tree.heading('nombre_campana', text='Nombre')
+        tree.heading('descripcion', text='Descripcion')
+        tree.heading('LISTA_CLIENTES', text='Lista clientes')
+        tree.heading('MAIL', text='Mail')
+
+        View_Campañas.Obtener_Campañas(tree)
+
+        #BOTON ACTUALIZAR
+        tk.Button(self,
+                    text='Actualizar',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_Campañas.Obtener_Campañas(tree)).pack(side='bottom', fill='x')
+    def Obtener_Campañas(tree):
+        for i in tree.get_children():
+            tree.delete(i)
+        lista_atributos = CampanaController.obtener_campanas()
+
+        for row in lista_atributos:
+            tree.insert('',tk.END ,values=[row.ID_atributo,row.AtributoDescripcion])
+            tree.pack(side='top', fill='both')
+    def Crear_Campaña(self):
+        window = AgregarAtributo(self)
+        window.grab_set()
+    def Eliminar_Campaña(self):
+        window = EliminarAtributo(self)
+        window.grab_set()         
+
+#Pop-ups para llenado de formularios
+class AgregarAtributo(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('400x180')
+        self.title('Agregar atributo')
+
+                #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Agregar un atributo de contacto',font = 'cooper 16', fg = 'deep pink')
+        titulo.pack(fill='both',side='top',expand=True)
+
+        # LABEL USUSARIO
+        titulo_atributo = tk.Label(self, pady = 5, bg = 'white', text = 'Nombre del atributo',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_atributo.pack(
+            fill='x',
+            side='top')
+        # txt USUSARIO
+        txt_atributo = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_atributo.pack(
+            fill='x',
+            side='top')
+
+        tk.Button(self,
+                    text='Cargar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=lambda: AgregarAtributo.post_atributo(self,txt_atributo.get())).pack(side='top', fill='both',expand=True)
+
+        tk.Button(self,
+                    text='Cerrar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=self.destroy).pack(side='top', fill='both',expand=True)
+    def post_atributo(self,nombre_atributo):
+        try:
+            AtributosController.agregar_atributo(nombre_atributo)
+            AgregarAtributo.open_CargaExitosa(self)
+        except:
+            AgregarAtributo.open_CargaError(self)
+    def open_CargaExitosa(self):
+           window = CargaExitosa(self)
+           window.grab_set()
+    def open_CargaError(self):
+           window = CargaError(self)
+           window.grab_set()    
+class EliminarAtributo(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('400x180')
+        self.title('Eliminar atributo')
+
+                #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Eliminar un atributo de contacto',font = 'cooper 16', fg = 'deep pink')
+        titulo.pack(fill='both',side='top',expand=True)
+
+        # LABEL USUSARIO
+        titulo_atributo = tk.Label(self, pady = 5, bg = 'white', text = 'Nombre del atributo',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_atributo.pack(
+            fill='x',
+            side='top')
+        # txt USUSARIO
+        txt_atributo = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_atributo.pack(
+            fill='x',
+            side='top')
+
+        tk.Button(self,
+                    text='Eliminar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=lambda: EliminarAtributo.delete_atributo(self,txt_atributo.get())).pack(side='top', fill='both',expand=True)
+
+        tk.Button(self,
+                    text='Cerrar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=self.destroy).pack(side='top', fill='both',expand=True)
+    def delete_atributo(self,nombre_atributo):
+        try:
+            AtributosController.eliminar_atributo(nombre_atributo)
+            EliminarAtributo.open_EliminadoExitoso(self)
+        except:
+            EliminarAtributo.open_EliminadoError(self)
+
+    def open_EliminadoExitoso(self):
+           window = EliminadoExitoso(self)
+           window.grab_set()
+    def open_EliminadoError(self):
+           window = EliminadoError(self)
+           window.grab_set()  
+
+# --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
 #Vistas de pop-up´s de estado
 #SON VISTAS QUE INDICAN ALGUN EVENTO Y QUE SE PUEDEN USAR EN CUALQUIER MENU
 class NoDisponibleView(tk.Toplevel):
@@ -792,6 +969,9 @@ class EliminadoError(tk.Toplevel):
                     fg = 'deep pink',
                     command=self.destroy).pack(side='bottom', fill='both',expand=True)
 
+
+
+
 #Se crea clase principal (tk.Tk), la cual es la encargada de manejar los Frames
 class APP(tk.Tk):
     def __init__(self,*args,**kwargs):
@@ -809,7 +989,8 @@ class APP(tk.Tk):
         contenedor_principal.grid( padx = 40, pady = 50 , sticky = "nsew")
 
         self.todos_los_frames = dict()
-        for F in (HomeView,Login, ContactosMenu, MailMenu, CampañasMenu, View_GestionarContactos, View_GestionarAtributosClientes, GestionarListasClientes):
+        for F in (HomeView,Login, ContactosMenu, MailMenu, CampañasMenu, View_GestionarContactos,
+                 View_GestionarAtributosClientes, GestionarListasClientes,View_Campañas):
 
             frame = F( contenedor_principal , self)
             self.todos_los_frames[F] = frame
@@ -824,3 +1005,12 @@ class APP(tk.Tk):
 root = APP()
 root.eval('tk::PlaceWindow . center')
 root.mainloop()
+
+
+
+### FALTA
+# TERMINAR FRONT DE : CAMPAÑAS, LISTA CLIENTES, AGREGAR ATRIBUTOS A CLIENTES
+# NAVEGACION ENTRE FRAMES
+
+# TERMINAR BACK DE : LISTA CLIENTES, CAMPAÑAS
+# TESTEAR 
