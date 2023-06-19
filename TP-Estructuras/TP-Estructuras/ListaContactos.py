@@ -66,22 +66,22 @@ class ListaContactosModel():
                 
         #Qwery
         qwery = """SELECT
-    LISTA_CONTACTOS.ID_LISTA_CONTACTOS,
-    NOMBRE_LISTA_CONTACTOS,
-    DESCRIPCION_LISTA_CONTACTOS,
-    CONTACTOS.ID_CONTACTO,
-    NOMBRE_CONTACTO,
-    FECHA_NACIMIENTO,
-    EMAIL,
-    DIRECCION,
-    SEXO
-FROM CONTACTOS_LISTA_CONTACTOS
-    INNER JOIN CONTACTOS ON
-        CONTACTOS_LISTA_CONTACTOS.ID_CONTACTO = CONTACTOS.ID_CONTACTO
-    INNER JOIN LISTA_CONTACTOS ON 
-        CONTACTOS_LISTA_CONTACTOS.ID_LISTA_CONTACTOS = LISTA_CONTACTOS.ID_LISTA_CONTACTOS
-WHERE CONTACTOS.CONTACTO_HABILITACION = 1;
-        """
+                        LISTA_CONTACTOS.ID_LISTA_CONTACTOS,
+                        NOMBRE_LISTA_CONTACTOS,
+                        DESCRIPCION_LISTA_CONTACTOS,
+                        CONTACTOS.ID_CONTACTO,
+                        NOMBRE_CONTACTO,
+                        FECHA_NACIMIENTO,
+                        EMAIL,
+                        DIRECCION,
+                        SEXO
+                    FROM CONTACTOS_LISTA_CONTACTOS
+                        INNER JOIN CONTACTOS ON
+                            CONTACTOS_LISTA_CONTACTOS.ID_CONTACTO = CONTACTOS.ID_CONTACTO
+                        INNER JOIN LISTA_CONTACTOS ON 
+                            CONTACTOS_LISTA_CONTACTOS.ID_LISTA_CONTACTOS = LISTA_CONTACTOS.ID_LISTA_CONTACTOS
+                    WHERE CONTACTOS.CONTACTO_HABILITACION = 1;
+                            """
 
         if nombreListaContactos != None:
             optionalWhere = " AND NOMBRE_LISTA_CONTACTOS = '{}'".format(nombreListaContactos)
@@ -93,17 +93,16 @@ WHERE CONTACTOS.CONTACTO_HABILITACION = 1;
             conn.commit()
             result = conn.execute(text(qwery))
         return result
-
     def getListaContactos_atributos(id_atributo):
 
             MySql = Conectores_BD.conector_mysql()
                 
             #Qwery
-            qwery = """SELECT ID_CONTACTO
-    FROM CONTACTOS
-	    INNER JOIN ATRIBUTOS_CONTACTOS ON 
-    	    CONTACTOS.ID_CONTACTO = ATRIBUTOS_CONTACTOS.ID_CONTACTO
-    WHERE ATRIBUTOS_CONTACTOS.ID_ATRIBUTO = {}'""".format(id_atributo)
+            qwery = """ SELECT ID_CONTACTO
+                        FROM CONTACTOS
+	                        INNER JOIN ATRIBUTOS_CONTACTOS ON 
+    	                        CONTACTOS.ID_CONTACTO = ATRIBUTOS_CONTACTOS.ID_CONTACTO
+                        WHERE ATRIBUTOS_CONTACTOS.ID_ATRIBUTO = {}'""".format(id_atributo)
 
 
              #Ejecuto el comando y guardo cambios

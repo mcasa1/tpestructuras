@@ -112,20 +112,22 @@ class Brevo_campañas:
         self.api_instance = sib_api_v3_sdk.EmailCampaignsApi(sib_api_v3_sdk.ApiClient(self.configuration))
 
     def post_campaña(self, campaña):
-        sender = {"name": 'EDP - Grupo 2', "email": 'aviscardi@itba.edu.ar'}
-        name = campaña.nombre_campana
+        sender = {"name": 'EDP - Grupo 2', "email": 'aviscardicotymania@gmail.com'}
+        name = campaña.nombre_campaña
         template_id= campaña.id_mail
-        scheduled_at = campaña.fecha
-        subject = campaña.descripcion
+        scheduled_at = campaña.fecha_envio
+        subject = campaña.descripcion_campaña
         reply_to = 'aviscardi@itba.edu.ar'
         recipients = {"listIds": [campaña.ID_lista_contactos]}
         email_campaigns = sib_api_v3_sdk.CreateEmailCampaign(sender=sender, name=name, template_id=template_id, scheduled_at=scheduled_at, subject=subject, reply_to=reply_to, recipients=recipients) # CreateEmailCampaign | Values to create a campaign
 
         try:
             api_response = self.api_instance.create_email_campaign(email_campaigns)
-            pprint(api_response)
         except ApiException as e:
             print("Exception when calling EmailCampaignsApi->create_email_campaign: %s\n" % e)
+
+        return api_response
+
     def delete_campaña(self, campaña):
         campaign_id = campaña.id_campaña
 
