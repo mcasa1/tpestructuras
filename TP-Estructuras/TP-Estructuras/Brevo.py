@@ -128,10 +128,10 @@ class Brevo_campañas:
 
         return api_response
 
-    def delete_campaña(self, campaña):
-        campaign_id = campaña.id_campaña
-
+    def delete_campaña(self, id_campaña):
+        campaign_id = id_campaña
+        status = sib_api_v3_sdk.UpdateCampaignStatus(status="suspended")
         try:
-            self.api_instance.delete_email_campaign(campaign_id)
+            self.api_instance.update_campaign_status(campaign_id, status)
         except ApiException as e:
-            print("Exception when calling EmailCampaignsApi->delete_email_campaign: %s\n" % e)
+            print("Exception when calling EmailCampaignsApi->update_campaign_status: %s\n" % e)

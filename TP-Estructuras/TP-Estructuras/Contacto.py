@@ -1,9 +1,11 @@
 import re
 import time
+from openpyxl import Workbook, load_workbook
 from Conectores_BD import *
 from Atributos import *
 import array as array
 from Brevo import *
+
 
 # Clase contacto
 class Contacto:
@@ -65,14 +67,12 @@ class Contacto:
 
 # Clase para manejar los contactos
 class Contacto_Controller():
-
     # Metodo para agregar un contacto con id unico
     def agregar_contacto(newContact: Contacto):
         brevo = Brevo_contactos()
         id_contacto = brevo.post_contacto(newContact)
         newContact.id = id_contacto.id
-        Contacto_Model.Post_contacto(newContact)
-    
+        Contacto_Model.Post_contacto(newContact)    
     # Metodo para imprimir los contactos no ocultos con parametro
     def obtener_contactos_params(habilitado, id_contacto=None, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, edad_desde=None, edad_hasta=None, atributo=list):
         datos = Contacto_Model.listar_contactos_buscador(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, edad_desde, edad_hasta, atributo, habilitado)
@@ -81,7 +81,6 @@ class Contacto_Controller():
             contacto_devuelto = Contacto(id_contacto=dato[0], nombre=dato[1], fecha_nacimiento=dato[2], email=dato[3], direccion=dato[4], sexo=dato[5])
             resultados.append(contacto_devuelto)
         return resultados
-
     # Metodo para imprimir los contactos con parametro
     def obtener_contactos(habilitado,id_contacto=None, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None):
         datos = Contacto_Model.listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, habilitado)
@@ -90,18 +89,43 @@ class Contacto_Controller():
             contacto_devuelto = Contacto(id_contacto=dato[0], nombre=dato[1], fecha_nacimiento=dato[2], email=dato[3], direccion=dato[4], sexo=dato[5])
             resultados.append(contacto_devuelto)
         return resultados
-
     # Metodo para ocultar un contacto
     def ocultar_contacto(email):
         Contacto_Model.ocultar_contacto(Contacto(email=email))
-
     #Metodo para vincular atributos a un contacto
     def agregar_atributos_contacto(contacto):
         Contacto_Model.Post_atributos_contacto(contacto)
+    def importacionMasivaPlantilla(pathToSave):
+        #Crear un archivo de Excel con valores en la primera fila
+        wb = Workbook()
+        ws = wb.active
+        ws.append(["Ingrese los datos de los contactos que quiere agregar. Por favor, respete el formato de la plantilla (no elimine esta fila). Limite: 100 contactos por importacion"])
+        ws.append(["Nombre", "Email", "Fecha de nacimiento", "Direccion", "Sexo (M-F)"])
+        
+        wb.save(pathToSave)
 
+    def importacionMasivaProcesamiento(path):
+        #leer las filas de un archivo de excel
+        wb = load_workbook(path)
+        ws = wb.active
+        filasErrores = []
+        contadorProcesadas = 0
+        x = 3 #Valor de la primera fila con datos
+        for row in ws.iter_rows(min_row=x, max_row=103, values_only=True):
+            #('torito', 'aviscardi@cotymania.com', datetime.datetime(2001, 4, 11, 0, 0), 'del facon 1025', 'M')
+
+            if row[1] != None:
+                sexo = row[4].replace('M','0').replace('F','1').replace('m','0').replace('f','1')
+                try:
+                    NewContact = Contacto(email=row[1], nombre=row[0],direccion=row[3],sexo=sexo,fecha_nacimiento=row[2])
+                    Contacto_Controller.agregar_contacto(NewContact)
+                    contadorProcesadas += 1
+                except:
+                    filasErrores.append(x)
+            x += 1
+        return filasErrores, contadorProcesadas
 
 class Contacto_Model:
-    
     def Post_contacto(contacto):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -115,8 +139,7 @@ class Contacto_Model:
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
             conn.execute(text(qwery))
-            conn.commit()
-            
+            conn.commit()            
     def listar_contactos_buscador(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, edad_desde, edad_hasta, atributo, habilitado):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -173,7 +196,6 @@ class Contacto_Model:
             conn.commit()
             result = conn.execute(text(qwery))
         return result
-    
     def listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, habilitado):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -218,8 +240,7 @@ class Contacto_Model:
             conn.execute(text(qwery))
             conn.commit()
             result = conn.execute(text(qwery))
-        return result
-    
+        return result   
     def ocultar_contacto(contacto):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -229,8 +250,7 @@ class Contacto_Model:
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
             conn.execute(text(qwery))
-            conn.commit()
-            
+            conn.commit()          
     def Post_atributos_contacto(contacto: Contacto):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -246,7 +266,6 @@ class Contacto_Model:
             conn.execute(text(qwery))
             conn.commit()
 
-
 #Contacto_Controller.agregar_contacto("Lucas", "lucas12@gmail.com", "1234/02/12", "remo 123", 0)
 # Contacto_Controller.ocultar_contacto_control("tomas@gmail.com")
 # Contacto_Controller.obtener_contactos_todos()
@@ -258,3 +277,4 @@ class Contacto_Model:
 ## atributo = 2
 #contacto.atributos.append(atributo)
 #Contacto_Controller.agregar_atributos_contacto(contacto)
+#Contacto_Controller.importacionMasivaProcesamiento(r"C:\Users\avisc\OneDrive\Desktop\test2.xlsx")

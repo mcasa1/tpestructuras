@@ -1,3 +1,4 @@
+from errno import EDEADLK
 from Conectores_BD import *
 from ListaContactos import *
 import array as array
@@ -30,6 +31,11 @@ class CampañaController:
             value = Campaña(id_campaña=dato[0], nombre_campaña= dato[1],descripcion_campaña=dato[2],fecha_envio=dato[3],ID_lista_contactos=dato[4],id_mail=dato[5])
             campañas.append(value)
         return campañas
+    
+    def eliminar_campaña(id_campaña:int):
+        brevo = Brevo_campañas()
+        Brevo_campañas.delete_campaña(brevo,id_campaña)
+        Campaña_model.deleteCampaña(id_campaña)
         
 class Campaña_model: 
     def Post_campaña(Campaña:Campaña):
@@ -75,6 +81,18 @@ class Campaña_model:
             conn.commit()
             result = conn.execute(text(qwery))
         return result
+    def deleteCampaña(id_campaña:int):
+        #Conector
+        MySql = Conectores_BD.conector_mysql()
+                
+        #Qwery
+        qwery = "DELETE FROM CAMPAÑAS WHERE ID_CAMPAÑA = '{}'".format(id_campaña)
+
+        #Ejecuto el comando y guardo cambios
+        with MySql.connect() as conn:
+            conn.execute(text(qwery))
+            conn.commit()
+
 
 #c = Campaña('prueba 1', 'prueba 1', '2023-06-19 20:00:00',2,2)
 #CampañaController.crear_campaña(c)

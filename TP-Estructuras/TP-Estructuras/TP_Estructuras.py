@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import filedialog
+from tkinter import messagebox, filedialog
+from tkinter.filedialog import asksaveasfilename
 from tkcalendar import Calendar
-from tktimepicker import AnalogPicker, AnalogThemes,SpinTimePickerModern,constants
+from tktimepicker import SpinTimePickerModern,constants
 from turtle import bgcolor
 
 from Login import LoginController
@@ -176,7 +177,7 @@ class CampañasMenu(tk.Frame):
         self.configure(bg = "white")
 
         #LABEL TITULO
-        titulo = tk.Label(self, bg = 'white', text = 'GESTOR DE CLIENTES',font = 'cooper 25', fg = 'deep pink')
+        titulo = tk.Label(self, bg = 'white', text = 'GESTOR DE CAMPAÑAS',font = 'cooper 25', fg = 'deep pink')
         titulo.pack(fill='both',side='top')
 
         tk.Button(self,
@@ -228,7 +229,16 @@ class View_GestionarContactos(tk.Frame):
                     cursor='hand2',
                     command=lambda: View_GestionarContactos.Eliminar_Contacto(self)).pack(side='bottom', fill='x')
 
-        #BOTON AGREGAR ATRIBUTO
+        #BOTON IMPORTAR CONTACTOS
+        tk.Button(self,
+                    text='Importar contactos',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_GestionarContactos.importarContactos(self)).pack(side='bottom', fill='x')
+
+        #BOTON AGREGAR CONTACTO
         tk.Button(self,
                     text='Agregar',
                     bg = 'white',
@@ -236,7 +246,6 @@ class View_GestionarContactos(tk.Frame):
                     font = 'cooper 10',
                     cursor='hand2',
                     command=lambda: View_GestionarContactos.Agregar_Contacto(self)).pack(side='bottom', fill='x')
-
 
         #LABEL TITULO
         titulo = tk.Label(self, bg = 'white', text = 'Contactos',font = 'cooper 25', fg = 'deep pink')
@@ -279,6 +288,9 @@ class View_GestionarContactos(tk.Frame):
         window.grab_set()
     def Eliminar_Contacto(self):
         window = EliminarContacto(self)
+        window.grab_set() 
+    def importarContactos(self):
+        window = importarContactos(self)
         window.grab_set() 
 
 #Pop-ups para llenado de formularios
@@ -438,7 +450,64 @@ class EliminarContacto(tk.Toplevel):
            window.grab_set()
     def open_EliminadoError(self):
            window = EliminadoError(self)
+           window.grab_set() 
+class importarContactos(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('400x180')
+        self.title('Importacion de contactos')
+
+                #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Importar contactos',font = 'cooper 16', fg = 'deep pink')
+        titulo.pack(fill='both',side='top',expand=True)
+        tk.Button(self,
+                    text='Descargar plantilla',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=lambda: importarContactos.descargarPlantilla(self)).pack(side='top', fill='both',expand=True)
+
+        tk.Button(self,
+                    text='Cargar datos',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=lambda: importarContactos.procesarContactos(self)).pack(side='top', fill='both',expand=True)
+
+        tk.Button(self,
+                    text='Cerrar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=self.destroy).pack(side='top', fill='both',expand=True)
+    def descargarPlantilla(self):
+        try:
+            #create path to save a .xlsx file with tkinter
+            data = [("xlsx file(*.xlsx)","*.xlsx")]
+            path = asksaveasfilename(filetypes = data, defaultextension = data)
+            Contacto_Controller.importacionMasivaPlantilla(path)
+            importarContactos.open_DescargaExitosa(self)
+        except:
+            importarContactos.open_DescargaError(self)
+    def procesarContactos(self): 
+        try:
+            file = filedialog.askopenfilename()
+            filasErrores, contadorProcesadas = Contacto_Controller.importacionMasivaProcesamiento(file)
+            messagebox.showinfo(message= contadorProcesadas, title="Filas procesadas")
+            if len(filasErrores) > 0:
+                messagebox.showinfo(message=filasErrores, title="Filas que no pudieron ser procesadas")
+            importarContactos.open_CargaExitosa(self)
+        except:
+            importarContactos.open_CargaError(self)
+
+    def open_CargaExitosa(self):
+           window = CargaExitosa(self)
+           window.grab_set()
+    def open_CargaError(self):
+           window = CargaError(self)
            window.grab_set()  
+
 
 # --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
 
@@ -613,7 +682,6 @@ class EliminarAtributo(tk.Toplevel):
 
 # --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
 
-
 # LISTAS DE CONTACTOS
 class View_ListasContactos(tk.Frame):
     def __init__(self, container,controller,*args, **kwargs):
@@ -664,7 +732,7 @@ class View_Campañas(tk.Frame):
                     fg = 'deep pink',
                     font = 'cooper 10',
                     cursor='hand2',
-                    command=lambda:controller.show_frame( ContactosMenu )).pack(side='bottom', fill='x')
+                    command=lambda:controller.show_frame( CampañasMenu )).pack(side='bottom', fill='x')
 
         tk.Button(self,
                     text='Eliminar',
@@ -725,7 +793,6 @@ class View_Campañas(tk.Frame):
     def Eliminar_Campaña(self):
         window = EliminarCampaña(self)
         window.grab_set()         
-
 #Pop-ups para llenado de formularios
 class CrearCampaña(tk.Toplevel):
     def __init__(self, parent):
@@ -850,20 +917,20 @@ class EliminarCampaña(tk.Toplevel):
         super().__init__(parent)
 
         self.geometry('400x180')
-        self.title('Eliminar atributo')
+        self.title('Eliminar campaña')
 
-                #LABEL TITULO
-        titulo = tk.Label(self, bg = 'white', text = 'Eliminar un atributo de contacto',font = 'cooper 16', fg = 'deep pink')
+        #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Eliminar una campaña',font = 'cooper 16', fg = 'deep pink')
         titulo.pack(fill='both',side='top',expand=True)
 
         # LABEL USUSARIO
-        titulo_atributo = tk.Label(self, pady = 5, bg = 'white', text = 'Nombre del atributo',font = 'cooper 12', fg = 'deep pink', justify = 'left')
-        titulo_atributo.pack(
+        titulo_campaña = tk.Label(self, pady = 5, bg = 'white', text = 'ID de la campaña',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_campaña.pack(
             fill='x',
             side='top')
         # txt USUSARIO
-        txt_atributo = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
-        txt_atributo.pack(
+        txt_campaña = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_campaña.pack(
             fill='x',
             side='top')
 
@@ -872,7 +939,7 @@ class EliminarCampaña(tk.Toplevel):
                     cursor='hand2',
                     bg = 'white',
                     fg = 'deep pink',
-                    command=lambda: EliminarAtributo.delete_atributo(self,txt_atributo.get())).pack(side='top', fill='both',expand=True)
+                    command=lambda: EliminarCampaña.delete_campaña(self,txt_campaña.get())).pack(side='top', fill='both',expand=True)
 
         tk.Button(self,
                     text='Cerrar',
@@ -880,12 +947,15 @@ class EliminarCampaña(tk.Toplevel):
                     bg = 'white',
                     fg = 'deep pink',
                     command=self.destroy).pack(side='top', fill='both',expand=True)
-    def delete_atributo(self,nombre_atributo):
+    def delete_campaña(self,id_campaña):
         try:
-            AtributosController.eliminar_atributo(nombre_atributo)
-            EliminarAtributo.open_EliminadoExitoso(self)
-        except:
-            EliminarAtributo.open_EliminadoError(self)
+            int(id_campaña)
+            CampañaController.eliminar_campaña(id_campaña)
+            EliminarCampaña.open_EliminadoExitoso(self)
+        except ValueError:
+            messagebox.showinfo(message="Ingrese un ID valido", title="Error en la entrada")
+        except Exception:
+            EliminarCampaña.open_EliminadoError(self)
     def open_EliminadoExitoso(self):
            window = EliminadoExitoso(self)
            window.grab_set()
@@ -1004,7 +1074,6 @@ class DescargaError(tk.Toplevel):
                     bg = 'white',
                     fg = 'deep pink',
                     command=self.destroy).pack(side='bottom', fill='both',expand=True)
-
 class EliminadoExitoso(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -1042,9 +1111,6 @@ class EliminadoError(tk.Toplevel):
                     bg = 'white',
                     fg = 'deep pink',
                     command=self.destroy).pack(side='bottom', fill='both',expand=True)
-
-
-
 
 #Se crea clase principal (tk.Tk), la cual es la encargada de manejar los Frames
 class APP(tk.Tk):
