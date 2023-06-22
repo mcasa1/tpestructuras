@@ -1,10 +1,8 @@
-from errno import EDEADLK
 from Conectores_BD import *
 from ListaContactos import *
 import array as array
 from Brevo import Brevo_campañas
 
-# Clase Campaña
 class Campaña(ListaContactos):
     def __init__(self,nombre_campaña, descripcion_campaña,fecha_envio,ID_lista_contactos,id_mail,id_campaña=None):
         self.id_campaña = id_campaña
@@ -14,17 +12,17 @@ class Campaña(ListaContactos):
         self.ID_lista_contactos = ID_lista_contactos
         #ListaContactos.__init__(self, ID_lista_contactos)
         self.id_mail = id_mail
-
 class CampañaController:
     campañas = [] 
-    # Metodo para crear una Campaña
     def crear_campaña(nuevaCampaña : Campaña):
+        # Metodo para crear una Campaña
         brevo = Brevo_campañas()
         response = brevo.post_campaña(nuevaCampaña)
         nuevaCampaña.id_campaña = response.id
         Campaña_model.Post_campaña(nuevaCampaña)
 
     def obtener_campañas(nombre_campaña = None) -> list:
+        # Metodo para obtener todas las Campañas o una en particular
         campañas = []
         datos = Campaña_model.getCampañas(nombre_campaña)
         for dato in datos:
@@ -33,10 +31,10 @@ class CampañaController:
         return campañas
     
     def eliminar_campaña(id_campaña:int):
+        # Metodo para eliminar una Campaña
         brevo = Brevo_campañas()
         Brevo_campañas.delete_campaña(brevo,id_campaña)
-        Campaña_model.deleteCampaña(id_campaña)
-        
+        Campaña_model.deleteCampaña(id_campaña)     
 class Campaña_model: 
     def Post_campaña(Campaña:Campaña):
         #Conector
@@ -92,7 +90,3 @@ class Campaña_model:
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()
-
-
-#c = Campaña('prueba 1', 'prueba 1', '2023-06-19 20:00:00',2,2)
-#CampañaController.crear_campaña(c)

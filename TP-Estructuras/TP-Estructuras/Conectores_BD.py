@@ -2,9 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from credenciales import *
 class Conectores_BD:
- 
-    #MySql CotyApp -- MySql CotyApp -- MySql CotyApp
-    
+     
     def conector_mysql():
         user= credenciales.sql.get('user')
         password=credenciales.sql.get('password')
@@ -23,13 +21,10 @@ class Conectores_BD:
 #es un objeto iterable y se puede indicar por indice o nombre a la columna que se hace referencia de los resultados de la consulta
 # dejo esos metodos porque creo que son los formatos que mas podemos usar.
 
-
-
     def consultar_MySql(qwery):
         MySql = Conectores_BD.conector_mysql()
         df = pd.DataFrame(MySql.connect().execute(text(qwery)))
-        return df
-    
+        return df   
     def ejecutar_MySql(qwery):
         #Conector
         MySql = Conectores_BD.conector_mysql()
@@ -43,7 +38,6 @@ class Conectores_BD:
             cnxn.commit()
         
         return cursor.rowcount
-
     def Query_un_valor(sql):
         Engine =  Conectores_BD.conector_mysql()
         result = Engine.connect().execute(text(sql))

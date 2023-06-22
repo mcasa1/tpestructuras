@@ -4,7 +4,6 @@ from tkinter import messagebox, filedialog
 from tkinter.filedialog import asksaveasfilename
 from tkcalendar import Calendar
 from tktimepicker import SpinTimePickerModern,constants
-from turtle import bgcolor
 
 from Login import LoginController
 from Atributos import AtributosController
@@ -13,7 +12,9 @@ from campana import CampañaController, Campaña
 from datetime import *
 
 class tkinterStyles():
+    #Clase con estilos que se usan para los widgets de tkinter
     def estiloTabla():
+        # Estilo para una tabla con el widget treeview
         style = ttk.Style()
         style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=('cooper', 11)) # Modify the font of the body
         style.configure("mystyle.Treeview.Heading", font=('cooper', 13,'bold')) # Modify the font of the headings
@@ -21,7 +22,9 @@ class tkinterStyles():
 
         return style
 
-#VISTAS
+### -------------------------------------------------- VISTAS -------------------------------------------------- ###
+
+### ---------------------------------------------------------- VISTA DEL LOGIN --------------------------------- ###
 class Login(tk.Frame):
     def __init__(self, container, controller,*args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -75,7 +78,8 @@ class Login(tk.Frame):
         except:
             Login.open_ContraseñaIncorrecta(self)
             
-    #Menu HOME
+### ---------------------------------------------------------- VISTA DEL HOME VIEW ----------------------------- ###
+
 class HomeView(tk.Frame):
     def __init__(self, container, controller,*args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -102,15 +106,10 @@ class HomeView(tk.Frame):
                 font = 'cooper 15',
                 cursor='hand2',
                 command=lambda: controller.show_frame( ContactosMenu )).pack(side='left',expand=True,fill='both')
-        #tk.Button(self,
-        #        text='  Mails  ',
-        #        bg = 'white',
-        #        fg = 'deep pink',
-        #        font = 'cooper 15',
-        #        cursor='hand2',
-        #        command=lambda: controller.show_frame( MailMenu )).pack(side='left',expand=True,fill='both')
-  
-#Sub menues
+ 
+### ---------------------------------------------------------- VISTAS DE SUBMENUES ----------------------------- ###
+
+### ------------------------------------------------------------------------- SUBMENU CONTACTOS ---------------- ###
 class ContactosMenu(tk.Frame):
     def __init__(self, container,controller,*args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -121,56 +120,34 @@ class ContactosMenu(tk.Frame):
         titulo.pack(fill='both',side='top')
 
         tk.Button(self,
-                    text='Contactos',
-                    bg = 'white',
-                    fg = 'deep pink',
-                    font = 'cooper 15',
-                    cursor='hand2',
-                    command=lambda:controller.show_frame( View_GestionarContactos )).pack(side='left', fill='both',expand=True)       
-        tk.Button(self,
-                    text='Atributos',
-                    bg = 'white',
-                    fg = 'deep pink',
-                    font = 'cooper 15',
-                    cursor='hand2',
-                    command=lambda:controller.show_frame( View_GestionarAtributosClientes )).pack(side='left', fill='both',expand=True)
-        tk.Button(self,
                     text='Volver',
                     bg = 'white',
                     fg = 'deep pink',
                     font = 'cooper 10',
                     cursor='hand2',
                     command=lambda:controller.show_frame( HomeView )).pack(side='bottom', fill='x')
-#class MailMenu(tk.Frame):
-#    def __init__(self, container,controller,*args, **kwargs):
-#        super().__init__(container, *args, **kwargs)
-#        self.configure(bg = "white")
-
-#        #LABEL TITULO
-#        titulo = tk.Label(self, bg = 'white', text = 'GESTOR DE CLIENTES',font = 'cooper 25', fg = 'deep pink')
-#        titulo.pack(fill='both',side='top')
-
-#        tk.Button(self,
-#                    text='aaaaa',
-#                    bg = 'white',
-#                    fg = 'deep pink',
-#                    font = 'cooper 15',
-#                    cursor='hand2',
-#                    command=lambda:controller.show_frame( SubMenu2MainView )).pack(side='left', fill='both',expand=True)       
-#        tk.Button(self,
-#                    text='aaaaa',
-#                    bg = 'white',
-#                    fg = 'deep pink',
-#                    font = 'cooper 15',
-#                    cursor='hand2',
-#                    command=lambda:controller.show_frame( SubMenu2MainView )).pack(side='left', fill='both',expand=True)
-#        tk.Button(self,
-#                    text='Volver',
-#                    bg = 'white',
-#                    fg = 'deep pink',
-#                    font = 'cooper 10',
-#                    cursor='hand2',
-#                    command=lambda:controller.show_frame( HomeView )).pack(side='bottom', fill='x')
+        tk.Button(self,
+                    text='      Contactos      ',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 15',
+                    cursor='hand2',
+                    command=lambda:controller.show_frame( View_GestionarContactos )).pack(side='left', fill='both',expand=True)       
+        tk.Button(self,
+                    text='      Atributos      ',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 15',
+                    cursor='hand2',
+                    command=lambda:controller.show_frame( View_GestionarAtributosClientes )).pack(side='left', fill='both',expand=True)
+        tk.Button(self,
+                    text='Atributos a contactos',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 15',
+                    cursor='hand2',
+                    command=lambda:controller.show_frame( View_AgregarAtributosAClientes )).pack(side='left', fill='both',expand=True)
+### ------------------------------------------------------------------------- SUBMENU CAMPAÑAS ----------------- ###
 class CampañasMenu(tk.Frame):
     def __init__(self, container,controller,*args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -202,10 +179,9 @@ class CampañasMenu(tk.Frame):
                     cursor='hand2',
                     command=lambda:controller.show_frame( HomeView )).pack(side='bottom', fill='x')
 
-#MENUES 3ERA CAPA
-# --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
+### ---------------------------------------------------------- VISTAS DE 3ER CAPA MENUES ----------------------- ###
 
-# CONTACTOS
+### ------------------------------------------------------------------------- CONTACTOS VIEW ------------------- ###
 # VISTAS Y POP-UPs DE CONTACTOS
 class View_GestionarContactos(tk.Frame):
     def __init__(self, container,controller,*args, **kwargs):
@@ -253,10 +229,13 @@ class View_GestionarContactos(tk.Frame):
         espacio = tk.Label(self, bg = 'white', text = '  ',font = 'cooper 25', fg = 'deep pink')
         espacio.pack(fill='both',side='top')
 
+
+        # TREEVIEW PARA MOSTRAR LOS DATOS
+
         #CONFIGURACION DE LA TABLA
         tkinterStyles.estiloTabla()
-
-        tree = ttk.Treeview(self, show='headings', columns=['ID_CONTACTO','NOMBRE_CONTACTO','FECHA_NACIMIENTO','EMAIL','DIRECCION','SEXO'], style= "mystyle.Treeview")
+        tree = ttk.Treeview(self,show='headings', columns=['ID_CONTACTO','NOMBRE_CONTACTO','FECHA_NACIMIENTO','EMAIL','DIRECCION','SEXO'], style= "mystyle.Treeview")
+                #COLUMNAS DEL TREEVIEW
         tree.heading('ID_CONTACTO', text='ID CONTACTO')
         tree.heading('NOMBRE_CONTACTO', text='NOMBRE')
         tree.heading('FECHA_NACIMIENTO', text='NACIMIENTO')
@@ -264,6 +243,16 @@ class View_GestionarContactos(tk.Frame):
         tree.heading('DIRECCION', text='DIRECCION')
         tree.heading('SEXO', text='SEXO')
 
+        #SCROLLBAR PARA EL TREEVIEW
+        verscrlbar = ttk.Scrollbar(self,
+                                   #orient ="vertical",
+                                   command = tree.yview)
+        # CONFIGURACION DE LA SCROLLBAR
+        tree.configure(yscrollcommand = verscrlbar.set)
+        verscrlbar.pack(side ='right', fill ='y')
+        tree.pack(side='top', fill='both')         
+
+        #LLENADO DE DATOS
         View_GestionarContactos.obtener_contactos(tree)
 
         #BOTON ACTUALIZAR
@@ -282,7 +271,6 @@ class View_GestionarContactos(tk.Frame):
 
         for contacto in list_contactos:
             tree.insert('',tk.END ,values=[contacto.id_contacto,contacto.nombre,contacto.fecha_nacimiento,contacto.email,contacto.direccion,contacto.sexo])
-            tree.pack(side='top', fill='both')
     def Agregar_Contacto(self):
         window = AgregarContacto(self)
         window.grab_set()
@@ -507,11 +495,14 @@ class importarContactos(tk.Toplevel):
     def open_CargaError(self):
            window = CargaError(self)
            window.grab_set()  
+    def open_DescargaExitosa(self): 
+           window = DesargaExitosa(self)
+           window.grab_set()
+    def open_DescargaError(self):
+           window = DescargaError(self)
+           window.grab_set()  
 
-
-# --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
-
-# ATRIBUTOS
+### ------------------------------------------------------------------------- ATRIBUTOS VIEW ------------------- ###
 # VISTAS Y POP-UPs DE ATRIBUTOS DE CONTACTOS
 class View_GestionarAtributosClientes(tk.Frame):
     def __init__(self, container,controller,*args, **kwargs):
@@ -535,7 +526,7 @@ class View_GestionarAtributosClientes(tk.Frame):
                     cursor='hand2',
                     command=lambda: View_GestionarAtributosClientes.Eliminar_Atributo(self)).pack(side='bottom', fill='x')
 
-        #BOTON AGREGAR ATRIBUTO
+        #BOTON AGREGAR CONTACTO
         tk.Button(self,
                     text='Agregar',
                     bg = 'white',
@@ -680,7 +671,249 @@ class EliminarAtributo(tk.Toplevel):
            window = EliminadoError(self)
            window.grab_set()  
 
-# --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
+### ------------------------------------------------------------------------- ASIGNAR ATRIBUTOS VIEW ----------- ###
+
+class View_AgregarAtributosAClientes(tk.Frame):
+    def __init__(self, container,controller,*args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        self.configure(bg = "white")
+
+        #BOTON VOLVER
+        btn_volver = tk.Button(self,
+                    text='Volver',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda:controller.show_frame( ContactosMenu ))
+
+        btn_delete = tk.Button(self,
+                    text='Eliminar asignacion de atributo',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_AgregarAtributosAClientes.EliminarAtributoContacto(self))
+
+        btn_add =tk.Button(self,
+                    text='Asignar atributo a un contacto',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_AgregarAtributosAClientes.AsignarAtributoContacto(self))
+
+        #BOTON ACTUALIZAR
+        btn_updt = tk.Button(self,
+                    text='Actualizar',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_AgregarAtributosAClientes.actualizarTablas(tree_atributos,tree_contactos))
+
+        #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Asignar atributos',font = 'cooper 25', fg = 'deep pink')
+        espacio = tk.Label(self, bg = 'white', text = '  ',font = 'cooper 25', fg = 'deep pink')
+
+        # ----------------------------  TABLA DE ATRIBUTOS ----------------------------  
+
+        #CONFIGURACION DE LA TABLA
+        tkinterStyles.estiloTabla()
+
+        tree_atributos = ttk.Treeview(self, show='headings', columns=['ID_ATRIBUTO','ATRIBUTO_DESCRIPCION'], style= "mystyle.Treeview")
+        tree_atributos.heading('ID_ATRIBUTO', text='ID DE ATRIBUTO')
+        tree_atributos.heading('ATRIBUTO_DESCRIPCION', text='DESCRIPCION')
+
+        #SCROLLBAR PARA EL TREEVIEW
+        tree_atributos_verscrlbar = ttk.Scrollbar(self,
+                                   #orient ="vertical",
+                                   command = tree_atributos.yview)
+        # CONFIGURACION DE LA SCROLLBAR
+        tree_atributos.configure(yscrollcommand = tree_atributos_verscrlbar.set)
+
+        # ----------------------------  TABLA DE CONTACTOS ----------------------------  
+
+        #CONFIGURACION DE LA TABLA
+        tree_contactos = ttk.Treeview(self,show='headings', columns=['ID_CONTACTO','NOMBRE_CONTACTO','EMAIL','ATRIBUTOS'], style= "mystyle.Treeview")
+                #COLUMNAS DEL TREEVIEW
+        tree_contactos.heading('ID_CONTACTO', text='ID CONTACTO')
+        tree_contactos.heading('NOMBRE_CONTACTO', text='NOMBRE')
+        tree_contactos.heading('EMAIL', text='EMAIL')
+        tree_contactos.heading('ATRIBUTOS', text='ATRIBUTOS')
+
+        #SCROLLBAR PARA EL TREEVIEW
+        tree_contactos_verscrlbar = ttk.Scrollbar(self,
+                                   #orient ="vertical",
+                                   command = tree_contactos.yview)
+        # CONFIGURACION DE LA SCROLLBAR
+        tree_contactos.configure(yscrollcommand = tree_contactos_verscrlbar.set)
+
+        # ----------------------------  TABLA DE CONTACTOS ----------------------------  
+        View_AgregarAtributosAClientes.actualizarTablas(tree_atributos,tree_contactos)
+
+
+        # ----------------------------       .PACK        ----------------------------
+        titulo.pack(fill='both',side='top')
+        espacio.pack(fill='both',side='top')
+
+        btn_volver.pack(side='bottom', fill='x')
+        btn_delete.pack(side='bottom', fill='x')
+        btn_add.pack(side='bottom', fill='x')
+        btn_updt.pack(side='bottom', fill='x')
+
+
+        tree_contactos.pack(side='left', fill='both')         
+        tree_contactos_verscrlbar.pack(side ='left', fill ='y')
+
+        tree_atributos.pack(side='left', fill='both') 
+        tree_atributos_verscrlbar.pack(side ='left', fill ='y')
+    def obtener_contactos(tree):
+        pass
+        for i in tree.get_children():
+            tree.delete(i)
+        dict_contactos = Contacto_Controller.obtener_contactos_atributos(habilitado=1)
+
+        for key, contacto in dict_contactos.items():
+            tree.insert('',tk.END ,values=[key,contacto.nombre,contacto.email, list(contacto.atributos.values())])
+    def obtener_atributos(tree):
+        for i in tree.get_children():
+            tree.delete(i)
+        lista_atributos = AtributosController.obtener_atributos()
+
+        for row in lista_atributos:
+            tree.insert('',tk.END ,values=[row.ID_atributo,row.AtributoDescripcion])
+    def actualizarTablas(tree_atributos, tree_contactos):
+        View_AgregarAtributosAClientes.obtener_atributos(tree_atributos)
+        View_AgregarAtributosAClientes.obtener_contactos(tree_contactos)
+    def AsignarAtributoContacto(self):
+        window = AsignarAtributoContacto(self)
+        window.grab_set()
+    def EliminarAtributoContacto(self):
+        window = EliminarAtributoContacto(self)
+        window.grab_set()         
+class AsignarAtributoContacto(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('400x240')
+        self.title('Asignar atributo')
+
+                #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Asignar un atributo a un contacto',font = 'cooper 16', fg = 'deep pink')
+        titulo.pack(fill='both',side='top',expand=True)
+
+        # LABEL CONTACTO
+        titulo_contacto = tk.Label(self, pady = 5, bg = 'white', text = 'ID del contacto',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_contacto.pack(
+            fill='x',
+            side='top')
+        # txt USUSARIO
+        txt_contacto = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_contacto.pack(
+            fill='x',
+            side='top')
+
+        # LABEL ATRIBUTO
+        titulo_atributo = tk.Label(self, pady = 5, bg = 'white', text = 'ID del atributo',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_atributo.pack(
+            fill='x',
+            side='top')
+        # txt USUSARIO
+        txt_atributo = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_atributo.pack(
+            fill='x',
+            side='top')
+
+
+        tk.Button(self,
+                    text='Cargar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=lambda: AsignarAtributoContacto.postContactoAtributo(self,txt_contacto.get(),txt_atributo.get())).pack(side='top', fill='both',expand=True)
+
+        tk.Button(self,
+                    text='Cerrar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=self.destroy).pack(side='top', fill='both',expand=True)
+    def postContactoAtributo(self,id_contacto, id_atributo):
+        try:
+            newContactAtribute = Contacto(id_contacto=id_contacto,atributos={id_atributo:None})
+            Contacto_Controller.agregar_atributos_contacto(newContactAtribute)
+            AsignarAtributoContacto.open_CargaExitosa(self)
+        except:
+            AsignarAtributoContacto.open_CargaError(self)
+    def open_CargaExitosa(self):
+           window = CargaExitosa(self)
+           window.grab_set()
+    def open_CargaError(self):
+           window = CargaError(self)
+           window.grab_set()    
+class EliminarAtributoContacto(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('400x240')
+        self.title('Eliminar atributo')
+
+                #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Desasignar un atributo a un contacto',font = 'cooper 16', fg = 'deep pink')
+        titulo.pack(fill='both',side='top',expand=True)
+
+        # LABEL CONTACTO
+        titulo_contacto = tk.Label(self, pady = 5, bg = 'white', text = 'ID del contacto',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_contacto.pack(
+            fill='x',
+            side='top')
+        # txt USUSARIO
+        txt_contacto = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_contacto.pack(
+            fill='x',
+            side='top')
+
+        # LABEL ATRIBUTO
+        titulo_atributo = tk.Label(self, pady = 5, bg = 'white', text = 'ID del atributo',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_atributo.pack(
+            fill='x',
+            side='top')
+        # txt USUSARIO
+        txt_atributo = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_atributo.pack(
+            fill='x',
+            side='top')
+
+
+        tk.Button(self,
+                    text='Eliminar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=lambda: EliminarAtributoContacto.deleteContactoAtributo(self,txt_contacto.get(),txt_atributo.get())).pack(side='top', fill='both',expand=True)
+
+        tk.Button(self,
+                    text='Cerrar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=self.destroy).pack(side='top', fill='both',expand=True)
+    def deleteContactoAtributo(self,id_contacto, id_atributo):
+        try:
+            newContactAtribute = Contacto(id_contacto=id_contacto,atributos={id_atributo:None})
+            Contacto_Controller.eliminar_atributos_contacto(newContactAtribute)
+            EliminarAtributoContacto.open_EliminadoExitoso(self)
+        except:
+            EliminarAtributoContacto.open_EliminadoError(self)
+    def open_EliminadoExitoso(self):
+           window = EliminadoExitoso(self)
+           window.grab_set()
+    def open_EliminadoError(self):
+           window = EliminadoError(self)
+           window.grab_set()  
+
+### ------------------------------------------------------------------------- LISTAS DE CONTACTOS VIEW --------- ###
 
 # LISTAS DE CONTACTOS
 class View_ListasContactos(tk.Frame):
@@ -714,9 +947,7 @@ class View_ListasContactos(tk.Frame):
                     cursor='hand2',
                     command=lambda:controller.show_frame( HomeView )).pack(side='bottom', fill='x')
 
-
-
-# --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
+### ------------------------------------------------------------------------- CAMPAÑAS VIEW -------------------- ###
 
 # CAMPAÑAS
 # VISTAS Y POP-UPs DE CAMPAÑAS
@@ -963,9 +1194,10 @@ class EliminarCampaña(tk.Toplevel):
            window = EliminadoError(self)
            window.grab_set()  
 
-# --- 0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 ---  0 --- 0 --- 
+### ---------------------------------------------------------- VISTAS DE POP-UPS ------------------------------- ###
 #Vistas de pop-up´s de estado
 #SON VISTAS QUE INDICAN ALGUN EVENTO Y QUE SE PUEDEN USAR EN CUALQUIER MENU
+
 class NoDisponibleView(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -1112,7 +1344,7 @@ class EliminadoError(tk.Toplevel):
                     fg = 'deep pink',
                     command=self.destroy).pack(side='bottom', fill='both',expand=True)
 
-#Se crea clase principal (tk.Tk), la cual es la encargada de manejar los Frames
+### -------------------------------------------------- APP MAIN ------------------------------------------------ ###
 class APP(tk.Tk):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
@@ -1130,7 +1362,7 @@ class APP(tk.Tk):
 
         self.todos_los_frames = dict()
         for F in (HomeView,Login, ContactosMenu, CampañasMenu, View_GestionarContactos,
-                 View_GestionarAtributosClientes, View_ListasContactos,View_Campañas):
+                 View_GestionarAtributosClientes, View_ListasContactos,View_Campañas,View_AgregarAtributosAClientes):
 
             frame = F( contenedor_principal , self)
             self.todos_los_frames[F] = frame
@@ -1145,12 +1377,3 @@ class APP(tk.Tk):
 root = APP()
 root.eval('tk::PlaceWindow . center')
 root.mainloop()
-
-
-
-### FALTA
-# TERMINAR FRONT DE : CAMPAÑAS, LISTA CLIENTES, AGREGAR ATRIBUTOS A CLIENTES
-# NAVEGACION ENTRE FRAMES
-
-# TERMINAR BACK DE : LISTA CLIENTES, CAMPAÑAS
-# TESTEAR 

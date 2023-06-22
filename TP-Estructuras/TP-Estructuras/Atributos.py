@@ -1,34 +1,33 @@
 from Conectores_BD import *
 
-#Clase de atributos
 class Atributo:
     def __init__(self, AtributoDescripcion, ID_atributo=None):
         self.ID_atributo = ID_atributo
         self.AtributoDescripcion = AtributoDescripcion
 
-# Clase para manejar los atributos
+    def __str__(self):
+        return "ID: {}, descripcion: {}".format(self.ID_atributo, self.AtributoDescripcion)
 class AtributosController:
 
     ListaAtributos = []
 
-    # Metodo para agregar un atributo
     def agregar_atributo(AtributoDescripcion):
+        # Metodo para agregar un atributo
+
         atributo = Atributo(AtributoDescripcion)
         Atributos_Model.Post_atributo(atributo)
-
-    # Metodo para eliminar un atributo
     def eliminar_atributo(nombre_atributo):
+        # Metodo para eliminar un atributo
         Atributos_Model.Delete_atributo(nombre_atributo)
-
-    # obtener todos los atributos
     def obtener_atributos():
+        # obtener todos los atributos
+
         lista_atributos = []
         datos = Atributos_Model.Listar_atributos()
         for dato in datos:
             atributo = Atributo(dato[1], dato[0])
             lista_atributos.append(atributo)
         return lista_atributos
-
 class Atributos_Model:
     def Post_atributo(atributo):
         #Conector
@@ -68,9 +67,3 @@ class Atributos_Model:
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()
-  
-            
-# TEST DE METODOS
-
-#AtributosController.agregar_atributo('SS')
-#AtributosController.eliminar_atributo('SS')

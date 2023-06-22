@@ -2,14 +2,12 @@ import re
 import time
 from openpyxl import Workbook, load_workbook
 from Conectores_BD import *
-from Atributos import *
+from Atributos import Atributo
 import array as array
 from Brevo import *
 
-
-# Clase contacto
 class Contacto:
-    def __init__(self, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, id_contacto=None, atributos:list=[]):
+    def __init__(self, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, id_contacto=None, atributos:dict={}):
         self.id_contacto = id_contacto
         self.nombre = nombre
         self.email = email
@@ -17,30 +15,25 @@ class Contacto:
         self.direccion = direccion
         self.sexo = sexo
         self.oculto = 1
-        self.atributos = atributos
-        
+        self.atributos = atributos   
     def __str__(self):
-        return "ID: {}, Nombre: {}, Email: {}, Fecha de nacimiento: {}, Direccion: {}, Sexo: {}".format(self.id, self.nombre, self.email, self.fecha_nacimiento, self.direccion, self.sexo)
-
+        return "ID: {}, Nombre: {}, Email: {}, Fecha de nacimiento: {}, Direccion: {}, Sexo: {}, atributos: {}".format(self.id_contacto, self.nombre, self.email, self.fecha_nacimiento, self.direccion, self.sexo, self.atributos)
     def validar_nombre(nombre: str) -> bool:
         if nombre.isalpha():
             return True
         else:
             return False
-
     def validar_email(email: str) -> bool:
         if re.match(r"[^@]+@[^@]+\.[^@]+", email):  
             return True
         else:  
             return False 
-
     def validar_fecha_nacimiento(fecha_nacimiento: str) -> bool:
         try:
             fecha_valida = time.strptime(fecha_nacimiento, "%Y/%m/%d")
             return True
         except:
             return False
-
     def validar_direccion(direccion: str) -> bool:
         direccion_lista = direccion.split(" ")
         if len(direccion_lista) == 2:
@@ -48,54 +41,85 @@ class Contacto:
                 return True
             else:
                 return False
-
     def validar_sexo(sexo: int) -> bool:
         if sexo in [0,1]:
             return True
         else:
             return False
-
     validar_dicc = {"nombre": validar_nombre,
                     "email": validar_email,
                     "fecha_nacimiento": validar_fecha_nacimiento,
                     "direccion": validar_direccion,
                     "sexo": validar_sexo}
-
     def validar(self, key: str, data: str) -> bool:
         return self.validar_dicc[key](data)
 
-
-# Clase para manejar los contactos
 class Contacto_Controller():
-    # Metodo para agregar un contacto con id unico
     def agregar_contacto(newContact: Contacto):
+        # Metodo para agregar un contacto con id unico
+
         brevo = Brevo_contactos()
         id_contacto = brevo.post_contacto(newContact)
         newContact.id = id_contacto.id
         Contacto_Model.Post_contacto(newContact)    
-    # Metodo para imprimir los contactos no ocultos con parametro
     def obtener_contactos_params(habilitado, id_contacto=None, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None, edad_desde=None, edad_hasta=None, atributo=list):
+        # Metodo para imprimir los contactos no ocultos con parametro
+
         datos = Contacto_Model.listar_contactos_buscador(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, edad_desde, edad_hasta, atributo, habilitado)
         resultados = []
         for dato in datos:
             contacto_devuelto = Contacto(id_contacto=dato[0], nombre=dato[1], fecha_nacimiento=dato[2], email=dato[3], direccion=dato[4], sexo=dato[5])
             resultados.append(contacto_devuelto)
         return resultados
-    # Metodo para imprimir los contactos con parametro
     def obtener_contactos(habilitado,id_contacto=None, nombre=None, email=None, fecha_nacimiento=None, direccion=None, sexo=None):
+        # Metodo para imprimir los contactos con parametro
+
         datos = Contacto_Model.listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, habilitado)
         resultados = []
         for dato in datos:
             contacto_devuelto = Contacto(id_contacto=dato[0], nombre=dato[1], fecha_nacimiento=dato[2], email=dato[3], direccion=dato[4], sexo=dato[5])
             resultados.append(contacto_devuelto)
         return resultados
-    # Metodo para ocultar un contacto
     def ocultar_contacto(email):
+        # Metodo para ocultar un contacto
         Contacto_Model.ocultar_contacto(Contacto(email=email))
-    #Metodo para vincular atributos a un contacto
     def agregar_atributos_contacto(contacto):
-        Contacto_Model.Post_atributos_contacto(contacto)
+        #Metodo para vincular atributos a un contacto
+
+        ids_atributos = contacto.atributos.keys()
+        for atributo in ids_atributos:
+            Contacto_Model.Post_atributos_contacto(atributo,contacto.id_contacto)
+    def eliminar_atributos_contacto(contacto):
+        #Metodo para desvincular atributos a un contacto
+
+        ids_atributos = contacto.atributos.keys()
+        for atributo in ids_atributos:
+            Contacto_Model.Delete_atributos_contacto(atributo,contacto.id_contacto)
+    def obtener_contactos_atributos(habilitado):
+        #Metodo para obtener contactos con sus atributos
+
+        datos = Contacto_Model.Listar_contactos_atributos()
+
+        resultados = {}
+
+        for dato in datos:
+            contacto_devuelto = Contacto(id_contacto=dato[0], nombre=dato[1],email=dato[2], atributos={})
+            atributo_devuelto = Atributo(ID_atributo=dato[4], AtributoDescripcion=dato[3])
+
+            if dato[4] != None:
+                contacto_devuelto.atributos[atributo_devuelto.ID_atributo] = atributo_devuelto.AtributoDescripcion
+
+            if contacto_devuelto.id_contacto not in resultados:
+                resultados[contacto_devuelto.id_contacto] = contacto_devuelto
+            else:
+                resultados[contacto_devuelto.id_contacto].atributos[atributo_devuelto.ID_atributo] = atributo_devuelto.AtributoDescripcion
+                
+        return resultados
+
+
+    ###  Metodos para importacion masiva de contactos
     def importacionMasivaPlantilla(pathToSave):
+        # Crear la plantilla de importacion
         #Crear un archivo de Excel con valores en la primera fila
         wb = Workbook()
         ws = wb.active
@@ -103,8 +127,9 @@ class Contacto_Controller():
         ws.append(["Nombre", "Email", "Fecha de nacimiento", "Direccion", "Sexo (M-F)"])
         
         wb.save(pathToSave)
-
     def importacionMasivaProcesamiento(path):
+        #Procesar la plantilla de importacion
+
         #leer las filas de un archivo de excel
         wb = load_workbook(path)
         ws = wb.active
@@ -127,6 +152,7 @@ class Contacto_Controller():
 
 class Contacto_Model:
     def Post_contacto(contacto):
+        # Metodo para agregar un contacto
         #Conector
         MySql = Conectores_BD.conector_mysql()
         
@@ -141,6 +167,7 @@ class Contacto_Model:
             conn.execute(text(qwery))
             conn.commit()            
     def listar_contactos_buscador(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, edad_desde, edad_hasta, atributo, habilitado):
+        # Metodo para buscar contactos. Es especializado para la creacion de ListaContactos
         #Conector
         MySql = Conectores_BD.conector_mysql()
                 
@@ -197,6 +224,7 @@ class Contacto_Model:
             result = conn.execute(text(qwery))
         return result
     def listar_contactos(id_contacto, nombre, email, fecha_nacimiento, direccion, sexo, habilitado):
+        # Metodo para buscar contactos en general, permite varios parametros de busqueda
         #Conector
         MySql = Conectores_BD.conector_mysql()
                 
@@ -242,6 +270,7 @@ class Contacto_Model:
             result = conn.execute(text(qwery))
         return result   
     def ocultar_contacto(contacto):
+        # Metodo para "Eliminar" un contacto
         #Conector
         MySql = Conectores_BD.conector_mysql()
         
@@ -251,30 +280,51 @@ class Contacto_Model:
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()          
-    def Post_atributos_contacto(contacto: Contacto):
+    def Post_atributos_contacto(id_atributo,id_contacto):
+        # Metodo para agregar un atributo a un contacto
         #Conector
         MySql = Conectores_BD.conector_mysql()
-        
-        #Creo el cursor
-        cnxn = MySql.raw_connection()
-            
         #Qwery
-        qwery = "INSERT INTO ATRIBUTOS_CONTACTOS (ID_ATRIBUTO, ID_CONTACTO) VALUES ('{}','{}')".format(contacto.atributos[-1].ID_atributo, contacto.id)
+        qwery = "INSERT INTO ATRIBUTOS_CONTACTOS (ID_ATRIBUTO, ID_CONTACTO) VALUES ('{}','{}')".format(id_atributo, id_contacto)
 
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()
+    def Delete_atributos_contacto(id_atributo,id_contacto):
+        # Metodo para eliminar un atributo de un contacto
+        #Conector
+        MySql = Conectores_BD.conector_mysql()
+        #Qwery
+        qwery = "DELETE FROM ATRIBUTOS_CONTACTOS WHERE ID_ATRIBUTO = '{}' AND ID_CONTACTO = '{}';".format(id_atributo, id_contacto)
 
-#Contacto_Controller.agregar_contacto("Lucas", "lucas12@gmail.com", "1234/02/12", "remo 123", 0)
-# Contacto_Controller.ocultar_contacto_control("tomas@gmail.com")
-# Contacto_Controller.obtener_contactos_todos()
-#api = Brevo()
-##lucas = Contacto(id=7, email="lucas12@gmail.com",nombre = 'lucas')
-##api.update_contacto(lucas)
-#contacto = Contacto(id=7)
-#atributo = Atributo(ID_atributo=18)
-## atributo = 2
-#contacto.atributos.append(atributo)
-#Contacto_Controller.agregar_atributos_contacto(contacto)
-#Contacto_Controller.importacionMasivaProcesamiento(r"C:\Users\avisc\OneDrive\Desktop\test2.xlsx")
+        #Ejecuto el comando y guardo cambios
+        with MySql.connect() as conn:
+            conn.execute(text(qwery))
+            conn.commit()
+    def Listar_contactos_atributos(habilitado:int = 1):
+        # Metodo para listar todos los contactos con sus atributos
+        #Conector
+        MySql = Conectores_BD.conector_mysql()
+                
+        #Qwery
+        qwery = """SELECT
+                        CONTACTOS.ID_CONTACTO,
+                        NOMBRE_CONTACTO,    
+                        EMAIL,
+                        ATRIBUTO_DESCRIPCION,
+                        ATRIBUTOS.ID_ATRIBUTO
+                    FROM CONTACTOS
+                        LEFT JOIN ATRIBUTOS_CONTACTOS ON
+                            CONTACTOS.ID_CONTACTO = ATRIBUTOS_CONTACTOS.ID_CONTACTO
+                        LEFT JOIN ATRIBUTOS ON
+                            ATRIBUTOS.ID_ATRIBUTO = ATRIBUTOS_CONTACTOS.ID_ATRIBUTO
+                    WHERE CONTACTO_HABILITACION = {}
+                    ORDER BY ID_CONTACTO;""".format(habilitado)
+                        
+        #Ejecuto el comando y guardo cambios
+        with MySql.connect() as conn:
+            conn.execute(text(qwery))
+            conn.commit()
+            result = conn.execute(text(qwery))
+        return result   

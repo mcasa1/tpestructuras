@@ -58,7 +58,10 @@ class Brevo_contactos:
         except ApiException as e:
             print("Exception when calling ContactsApi->get_contacts: %s\n" % e)
 
-#FOLDERS --> Es un objeto que no contempla nuestra app. Son carpetas de listas de contactos.
+#FOLDERS --> Es un objeto que no contempla nuestra app. 
+# Son carpetas de listas de contactos. Existe en Brevo (la app de mailing)
+# Se creo el metodo para poder conocer las folders existentes en Brevo.
+   
     def get_folders(self):
         limit = 10
         offset = 0
@@ -69,9 +72,7 @@ class Brevo_contactos:
         except ApiException as e:
             print("Exception when calling ContactsApi->get_folders: %s\n" % e)
 
-#LISTAS DE CONTACTOS
-#
-#    
+#LISTAS DE CONTACTOS  
     def post_lista_contactos(self,ListaContactos):
         create_list = sib_api_v3_sdk.CreateList(name=ListaContactos.nombre_lista_contacto, folder_id=1)
 
@@ -81,7 +82,6 @@ class Brevo_contactos:
             print("Exception when calling ContactsApi->create_list: %s\n" % e)
 
         return api_response
-
     def delete_lista_contactos(self, ListaContactos):
         list_id = ListaContactos.ID_lista_contactos
 
@@ -89,7 +89,6 @@ class Brevo_contactos:
             self.api_instance.delete_list(list_id)
         except ApiException as e:
             print("Exception when calling ListsApi->delete_list: %s\n" % e)
-
     def post_contactos_form_lista_contactos(self, ID_lista_contactos, ListaContactos):
         contact_ids = sib_api_v3_sdk.AddContactToList()
         contact_ids.ids = ListaContactos
@@ -100,8 +99,6 @@ class Brevo_contactos:
         except ApiException as e:
             print("Exception when calling ListsApi->add_contact_to_list: %s\n" % e)
 
-
-#CAMPAÑAS
 class Brevo_campañas:
     def __init__(self):
         # Configure API key authorization: api-key
@@ -110,7 +107,6 @@ class Brevo_campañas:
 
         # create an instance of the API class
         self.api_instance = sib_api_v3_sdk.EmailCampaignsApi(sib_api_v3_sdk.ApiClient(self.configuration))
-
     def post_campaña(self, campaña):
         sender = {"name": 'EDP - Grupo 2', "email": 'aviscardicotymania@gmail.com'}
         name = campaña.nombre_campaña
@@ -127,7 +123,6 @@ class Brevo_campañas:
             print("Exception when calling EmailCampaignsApi->create_email_campaign: %s\n" % e)
 
         return api_response
-
     def delete_campaña(self, id_campaña):
         campaign_id = id_campaña
         status = sib_api_v3_sdk.UpdateCampaignStatus(status="suspended")
