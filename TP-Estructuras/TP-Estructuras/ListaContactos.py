@@ -73,6 +73,11 @@ class ListaContactosController:
             value = ListaContactos(dato[1], dato[2],fechaCreacion = dato[3],ID_lista_contactos = dato[0])
             lista_contactos.append(value)
         return lista_contactos
+    def eliminar_lista_contactos(id_lista_contactos):
+        # Metodo para eliminar una Campaña
+        brevo = Brevo_contactos()
+        brevo.delete_lista_contactos(brevo,id_lista_contactos)
+        ListaContactosModel.deleteListaContactos(id_lista_contactos)  
 
 class ListaContactosModel():
     def getListaContactosDatos(nombreListaContactos = None):
@@ -107,8 +112,19 @@ class ListaContactosModel():
         with MySql.connect() as conn:
             conn.execute(text(qwery))
             conn.commit()
-    def deleteListaContactos():
-        pass
+    def deleteListaContactos(id_lista_contactos):
+        #Conector
+        MySql = Conectores_BD.conector_mysql()
+                
+        #Qwerys para eliminar los contactos de la lista y despues eliminar los datos de cabecera
+        qwery1 = "DELETE FROM CONTACTOS_LISTA_CONTACTOS WHERE ID_LISTA_CONTACTOS = 1".format(id_lista_contactos)
+        qwery2 = "DELETE FROM LISTA_CONTACTOS WHERE ID_LISTA_CONTACTOS = 1".format(id_lista_contactos)
+        #Ejecuto el comando y guardo cambios
+        with MySql.connect() as conn:
+            conn.execute(text(qwery1))
+            conn.commit()
+            conn.execute(text(qwery2))
+            conn.commit()
     def addContactos(df):
         # Metodo para agregar los contactos a una lista de contactos.
 

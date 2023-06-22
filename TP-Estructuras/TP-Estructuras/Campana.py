@@ -33,7 +33,7 @@ class CampañaController:
     def eliminar_campaña(id_campaña:int):
         # Metodo para eliminar una Campaña
         brevo = Brevo_campañas()
-        Brevo_campañas.delete_campaña(brevo,id_campaña)
+        brevo.delete_campaña(brevo,id_campaña)
         Campaña_model.deleteCampaña(id_campaña)     
 class Campaña_model: 
     def Post_campaña(Campaña:Campaña):
