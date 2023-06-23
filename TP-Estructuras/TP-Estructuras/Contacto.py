@@ -173,50 +173,59 @@ class Contacto_Model:
                 
         #Qwery
         qwery = """ SELECT 
-                        ID_CONTACTO,
-                        NOMBRE_CONTACTO,    
+                        CONTACTOS.ID_CONTACTO AS ID_CONTACTO,
+                        NOMBRE_CONTACTO,
                         FECHA_NACIMIENTO,
                         EMAIL,
                         DIRECCION,
-                        SEXO 
+                        SEXO
                     FROM CONTACTOS 
-                        LEFT JOIN ATRIBUTOS_CONTACTO ON 
                     WHERE CONTACTO_HABILITACION = {} """.format(habilitado)
                 
         
         if id_contacto != None:
-            optionalwhere = "AND ID_CONTACTO = '{}' ".format(id_contacto)
+            optionalwhere = "AND CONTACTOS.ID_CONTACTO = {} ".format(id_contacto)
             qwery = qwery + optionalwhere
                 
         if nombre != None:
-            optionalwhere = "AND NOMBRE_CONTACTO = '{}'".format(nombre)
+            optionalwhere = "AND NOMBRE_CONTACTO = '{}' ".format(nombre)
             qwery = qwery + optionalwhere
         
         if fecha_nacimiento != None:
-                optionalwhere = "AND FECHA_NACIMIENTO = '{}'".format(fecha_nacimiento)
+                optionalwhere = "AND FECHA_NACIMIENTO = '{}' ".format(fecha_nacimiento)
                 qwery = qwery + optionalwhere
         
         if email != None:
-                optionalwhere = "AND EMAIL = '{}'".format(email)
+                optionalwhere = "AND EMAIL = '{}' ".format(email)
                 qwery = qwery + optionalwhere
         
         if direccion != None:
-                optionalwhere = "DIRECCION = '{}'".format(direccion)
+                optionalwhere = "AND DIRECCION = '{}' ".format(direccion)
                 qwery = qwery + optionalwhere
 
         if sexo != None:
-                optionalwhere = "AND SEXO = '{}'".format(sexo)
+            sexodigito = 0
+            if sexo == "Masculino":
+                sexodigito = 0
+                optionalwhere = "AND SEXO = {} ".format(sexodigito)
+                qwery = qwery + optionalwhere
+            elif sexo == "Femenino":
+                sexodigito = 1
+                optionalwhere = "AND SEXO = {} ".format(sexodigito)
                 qwery = qwery + optionalwhere
         
         if edad_desde != None and edad_hasta != None:
-                optionalwhere = " AND (SELECT DATEDIFF(CURDATE() ,FECHA_NACIMIENTO)) BETWEEN '{}' AND '{}'".format(edad_desde, edad_hasta)
+                optionalwhere = " AND (SELECT TIMESTAMPDIFF(YEAR, FECHA_NACIMIENTO, CURDATE())) BETWEEN {} AND {} ".format(edad_desde, edad_hasta)
                 qwery = qwery + optionalwhere
             
-        if atributo.ID_atributo != None:
-            optionalwhere = "AND ID_ATRIBUTO IN '{}'".format(atributo)
-            qwery = qwery + optionalwhere
-            
-        
+        if atributo != []:
+            if len(atributo) == 1:
+                optionalwhere = "AND ID_CONTACTO IN (SELECT ID_CONTACTO FROM ATRIBUTOS_CONTACTOS WHERE ID_ATRIBUTO = {})".format(atributo[0])
+                qwery = qwery + optionalwhere
+            elif len(atributo) > 1:
+                optionalwhere = "AND ID_CONTACTO IN (SELECT ID_CONTACTO FROM ATRIBUTOS_CONTACTOS WHERE ID_ATRIBUTO IN {})".format(tuple(atributo))
+                qwery = qwery + optionalwhere
+                    
         #Ejecuto el comando y guardo cambios
         with MySql.connect() as conn:
             conn.execute(text(qwery))

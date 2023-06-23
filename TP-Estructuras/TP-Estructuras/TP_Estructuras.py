@@ -4,12 +4,14 @@ from tkinter import messagebox, filedialog
 from tkinter.filedialog import asksaveasfilename
 from tkcalendar import Calendar
 from tktimepicker import SpinTimePickerModern,constants
+from datetime import *
 
 from Login import LoginController
 from Atributos import AtributosController
 from Contacto import Contacto_Controller, Contacto
 from campana import CampañaController, Campaña
-from datetime import *
+from ListaContactos import ListaContactosController, ListaContactos
+
 
 class tkinterStyles():
     #Clase con estilos que se usan para los widgets de tkinter
@@ -158,19 +160,19 @@ class CampañasMenu(tk.Frame):
         titulo.pack(fill='both',side='top')
 
         tk.Button(self,
-                    text='Campañas',
+                    text='     Campañas    ',
                     bg = 'white',
                     fg = 'deep pink',
                     font = 'cooper 15',
                     cursor='hand2',
                     command=lambda:controller.show_frame( View_Campañas )).pack(side='left', fill='both',expand=True)       
         tk.Button(self,
-                    text='Listas de clientes',
+                    text='Listas de contactos',
                     bg = 'white',
                     fg = 'deep pink',
                     font = 'cooper 15',
                     cursor='hand2',
-                    command=lambda:controller.show_frame( View_ListasContactos )).pack(side='left', fill='both',expand=True)
+                    command=lambda:controller.show_frame( View_GestionarListasContactos )).pack(side='left', fill='both',expand=True)
         tk.Button(self,
                     text='Volver',
                     bg = 'white',
@@ -222,6 +224,16 @@ class View_GestionarContactos(tk.Frame):
                     font = 'cooper 10',
                     cursor='hand2',
                     command=lambda: View_GestionarContactos.Agregar_Contacto(self)).pack(side='bottom', fill='x')
+
+        #BOTON BUSCAR CONTACTOS
+        tk.Button(self,
+                text='Buscar',
+                bg = 'white',
+                fg = 'deep pink',
+                font = 'cooper 10',
+                cursor='hand2',
+                command=lambda: View_GestionarContactos.buscar_contactos(self)).pack(side='bottom', fill='x')
+
 
         #LABEL TITULO
         titulo = tk.Label(self, bg = 'white', text = 'Contactos',font = 'cooper 25', fg = 'deep pink')
@@ -280,6 +292,9 @@ class View_GestionarContactos(tk.Frame):
     def importarContactos(self):
         window = importarContactos(self)
         window.grab_set() 
+    def buscar_contactos(self):
+        window = Buscar_Contactos(self)
+        window.grab_set()
 
 #Pop-ups para llenado de formularios
 class AgregarContacto(tk.Toplevel):
@@ -501,6 +516,197 @@ class importarContactos(tk.Toplevel):
     def open_DescargaError(self):
            window = DescargaError(self)
            window.grab_set()  
+class Buscar_Contactos(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        
+        self.geometry('1275x680')
+        self.title('Buscar contactos')
+        
+        mi_canvas = tk.Canvas(self)
+        mi_canvas.pack(side='left', fill='both', expand=True)
+        
+        mi_scrollbar = ttk.Scrollbar(self, orient='vertical', command=mi_canvas.yview)
+        mi_scrollbar.pack(side='right', fill='y')
+        
+        mi_canvas.configure(yscrollcommand=mi_scrollbar.set)
+        mi_canvas.bind('<Configure>', lambda e: mi_canvas.configure(scrollregion = mi_canvas.bbox('all')))
+        
+        segundo_frame = tk.Frame(mi_canvas)
+        
+        mi_canvas.create_window((0,0), window=segundo_frame, anchor='nw')
+        
+        #LABEL TITULO
+        titulo = tk.Label(segundo_frame, bg = 'white', text = 'Buscar contactos',font = 'cooper 16', fg = 'deep pink')
+        titulo.pack(fill='both',side='top',expand=True)
+        
+        # LABEL ID_CONTACTO
+        titulo_id_contacto = tk.Label(segundo_frame, pady = 5, bg = 'white', text = 'ID Contacto',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_id_contacto.pack(
+            fill='x',
+            side='top')
+        # ENTRY NOMBRE
+        txt_id_contacto = tk.Entry(segundo_frame, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_id_contacto.pack(
+            fill='x',
+            side='top')
+        
+        # LABEL NOMBRE
+        titulo_nombre = tk.Label(segundo_frame, pady = 5, bg = 'white', text = 'Nombre y apellido',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_nombre.pack(
+            fill='x',
+            side='top')
+        # ENTRY NOMBRE
+        txt_nombre = tk.Entry(segundo_frame, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_nombre.pack(
+            fill='x',
+            side='top')
+
+
+        # LABEL MAIL
+        titulo_mail = tk.Label(segundo_frame, pady = 5, bg = 'white', text = 'E-mail',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_mail.pack(
+            fill='x',
+            side='top')
+        # ENTRY MAIL
+        txt_mail= tk.Entry(segundo_frame, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_mail.pack(
+            fill='x',
+            side='top')
+
+        # EDAD_DESDE
+        titulo_edad_desde= tk.Label(segundo_frame, pady = 5, bg = 'white', text = 'Edad Desde',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_edad_desde.pack(
+            fill='x',
+            side='top')
+        # ENTRY EDAD_DESDE
+        txt_edad_desde= tk.Entry(segundo_frame, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_edad_desde.pack(
+            fill='x',
+            side='top')
+        
+        # EDAD_HASTA
+        titulo_edad_hasta= tk.Label(segundo_frame, pady = 5, bg = 'white', text = 'Edad hasta',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_edad_hasta.pack(
+            fill='x',
+            side='top')
+        # ENTRY EDAD_HASTA
+        txt_edad_hasta= tk.Entry(segundo_frame, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_edad_hasta.pack(
+            fill='x',
+            side='top')
+        
+        # LABEL DIRECCION
+        titulo_direccion= tk.Label(segundo_frame, pady = 5, bg = 'white', text = 'Dirección',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_direccion.pack(
+            fill='x',
+            side='top')
+        # ENTRY DIRECCION
+        txt_direccion= tk.Entry(segundo_frame, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_direccion.pack(
+            fill='x',
+            side='top')
+
+        # LABEL SEXO
+        titulo_sexo= tk.Label(segundo_frame, pady = 5, bg = 'white', text = 'Sexo',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_sexo.pack(
+            fill='x',
+            side='top')
+        # ENTRY SEXO
+        sexo_box = ttk.Combobox(segundo_frame,
+            state="readonly",
+            values=['',"Masculino", "Femenino"])
+
+        sexo_box.current(0)
+        sexo_box.pack(side='top', fill='both',expand=True)
+
+        # LABEL ATRIBUTOS
+        titulo_atributos= tk.Label(segundo_frame, pady = 5, bg = 'white', text = 'Atributos (Se puede ingresar varios separando con ",")',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_atributos.pack(
+            fill='x',
+            side='top')
+        # ENTRY ATRIBUTOS
+        txt_atributos= tk.Entry(segundo_frame, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_atributos.pack(
+            fill='x',
+            side='top')
+
+        #CONFIGURACION DE LA TABLA
+        tkinterStyles.estiloTabla()
+
+        tree = ttk.Treeview(segundo_frame, show='headings', columns=['ID_CONTACTO','NOMBRE_CONTACTO','FECHA_NACIMIENTO','EMAIL','DIRECCION','SEXO'], style= "mystyle.Treeview")
+        tree.heading('ID_CONTACTO', text='ID CONTACTO')
+        tree.heading('NOMBRE_CONTACTO', text='NOMBRE')
+        tree.heading('FECHA_NACIMIENTO', text='NACIMIENTO')
+        tree.heading('EMAIL', text='EMAIL')
+        tree.heading('DIRECCION', text='DIRECCION')
+        tree.heading('SEXO', text='SEXO')
+
+        #SCROLLBAR PARA EL TREEVIEW
+        verscrlbar = ttk.Scrollbar(segundo_frame,
+                                   #orient ="vertical",
+                                   command = tree.yview)
+        # CONFIGURACION DE LA SCROLLBAR
+        tree.configure(yscrollcommand = verscrlbar.set)
+        verscrlbar.pack(side ='right', fill ='y')
+        tree.pack(side='top', fill='both')
+
+        tree.pack(side='right', fill='both')
+
+        tk.Button(segundo_frame,
+                text='Filtrar',
+                cursor='hand2',
+                bg = 'white',
+                fg = 'deep pink',
+                command=lambda: Buscar_Contactos.buscar_contactos(self,tree,
+                                                                 txt_id_contacto.get(),
+                                                                txt_nombre.get(),
+                                                               txt_mail.get(),
+                                                             txt_edad_desde.get(),
+                                                            txt_edad_hasta.get(),
+                                                           txt_direccion.get(),
+                                                          sexo_box.get(),
+                                                         txt_atributos.get()
+                                                         )
+                ).pack(side='top', fill='both',expand=True)
+
+        tk.Button(segundo_frame,
+                    text='Cerrar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=self.destroy).pack(side='bottom', fill='both',expand=True)
+        
+    def buscar_contactos(self,tree,id_contacto,nombre,email,edad_desde, edad_hasta, direccion, sexo, atributo):
+
+        if id_contacto == '':
+            id_contacto = None
+        if nombre == '':
+            nombre = None
+        if email == '':
+            email = None
+        if edad_desde == '':
+            edad_desde = None
+        if edad_hasta == '':
+            edad_hasta = None
+        if direccion == '':
+            direccion = None
+        if sexo == '':
+            sexo = None
+        
+        atributo = atributo.split(',')
+        atributo = [x.strip(' ') for x in atributo]
+        
+        if atributo == ['']:
+            atributo = []
+        
+        list_contactos2 = Contacto_Controller.obtener_contactos_params(id_contacto=id_contacto, nombre=nombre,email=email,edad_desde=edad_desde, edad_hasta=edad_hasta, direccion=direccion, sexo=sexo, atributo=atributo, habilitado=1)
+
+        for i in tree.get_children():
+            tree.delete(i)
+
+        for contacto in list_contactos2:
+            tree.insert('',tk.END ,values=[contacto.id_contacto,contacto.nombre,contacto.fecha_nacimiento,contacto.email,contacto.direccion,contacto.sexo])
 
 ### ------------------------------------------------------------------------- ATRIBUTOS VIEW ------------------- ###
 # VISTAS Y POP-UPs DE ATRIBUTOS DE CONTACTOS
@@ -915,37 +1121,298 @@ class EliminarAtributoContacto(tk.Toplevel):
 
 ### ------------------------------------------------------------------------- LISTAS DE CONTACTOS VIEW --------- ###
 
-# LISTAS DE CONTACTOS
-class View_ListasContactos(tk.Frame):
+# LISTA DE CONTACTOS
+# VISTAS Y POP-UPs DE LISTAS DE CONTACTOS
+class View_GestionarListasContactos(tk.Frame):
     def __init__(self, container,controller,*args, **kwargs):
         super().__init__(container, *args, **kwargs)
         self.configure(bg = "white")
-
-        #LABEL TITULO
-        titulo = tk.Label(self, bg = 'white', text = 'Submenu1',font = 'cooper 25', fg = 'deep pink')
-        titulo.pack(fill='both',side='top')
-
-        tk.Button(self,
-                    text='aaaaa',
-                    bg = 'white',
-                    fg = 'deep pink',
-                    font = 'cooper 15',
-                    cursor='hand2',
-                    command=lambda:controller.show_frame( SubMenu1MainView )).pack(side='left', fill='both',expand=True)       
-        tk.Button(self,
-                    text='aaaaa',
-                    bg = 'white',
-                    fg = 'deep pink',
-                    font = 'cooper 15',
-                    cursor='hand2',
-                    command=lambda:controller.show_frame( SubMenu1MainView )).pack(side='left', fill='both',expand=True)
+        
+         #BOTON VOLVER
         tk.Button(self,
                     text='Volver',
                     bg = 'white',
                     fg = 'deep pink',
                     font = 'cooper 10',
                     cursor='hand2',
-                    command=lambda:controller.show_frame( HomeView )).pack(side='bottom', fill='x')
+                    command=lambda:controller.show_frame( CampañasMenu )).pack(side='bottom', fill='x')
+
+        #BOTON ELIMINAR
+        tk.Button(self,
+                    text='Eliminar una lista',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_GestionarContactos.Eliminar_Contacto(self)).pack(side='bottom', fill='x')
+
+        #BOTON CREAR LISTA
+        tk.Button(self,
+                    text='Crear una lista',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    font = 'cooper 10',
+                    cursor='hand2',
+                    command=lambda: View_GestionarListasContactos.crear_lista_contacto(self)).pack(side='bottom', fill='x')
+        
+        #BOTON AGREGAR CONTACTOS 
+        tk.Button(self,
+                text='Agregar contactos a una lista',
+                bg = 'white',
+                fg = 'deep pink',
+                font = 'cooper 10',
+                cursor='hand2',
+                command=lambda: View_GestionarListasContactos.agregar_contactos(self)).pack(side='bottom', fill='x')
+        
+        #BOTON AGREGAR CONTACTOS 
+        tk.Button(self,
+                text='Actualizar',
+                bg = 'white',
+                fg = 'deep pink',
+                font = 'cooper 10',
+                cursor='hand2',
+                command=lambda: View_GestionarListasContactos.actualizar(tree,tree2)).pack(side='bottom', fill='x')
+
+
+        #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Lista de contactos',font = 'cooper 25', fg = 'deep pink')
+        titulo.pack(fill='both',side='top')
+        espacio = tk.Label(self, bg = 'white', text = '  ',font = 'cooper 25', fg = 'deep pink')
+        espacio.pack(fill='both',side='top')
+
+        #CONFIGURACION DE LA TABLA
+        tkinterStyles.estiloTabla()
+
+        tree = ttk.Treeview(self, show='headings', columns=['ID_LISTA_CONTACTOS','NOMBRE_LISTA_CONTACTOS', 'DESCRIPCION_LISTA_CONTACTOS'], style= "mystyle.Treeview")
+        tree.heading('ID_LISTA_CONTACTOS', text='ID LISTA CONTACTOS')
+        tree.heading('NOMBRE_LISTA_CONTACTOS', text='NOMBRE')
+        tree.heading('DESCRIPCION_LISTA_CONTACTOS', text='DESCRIPCION')    
+    
+        View_GestionarListasContactos.obtener_listas_contactos(tree)
+        
+        tree2 = ttk.Treeview(self, show='headings', columns=['ID_CONTACTO','EMAIL_CONTACTO', 'ID_LISTA_CONTACTOS'], style= "mystyle.Treeview")
+        tree2.heading('ID_CONTACTO', text='ID CONTACTO')
+        tree2.heading('EMAIL_CONTACTO', text='EMAIL CONTACTO')
+        tree2.heading('ID_LISTA_CONTACTOS', text='ID LISTA CONTACTOS')
+        
+        View_GestionarListasContactos.obtener_listas_contactos_contactos(tree2)
+
+    def obtener_listas_contactos(tree):
+        for i in tree.get_children():
+            tree.delete(i)
+        lista_contactos = ListaContactosController.obtener_lista_contactos_datos()
+
+        for listac in lista_contactos:
+            tree.insert('',tk.END ,values=[listac.ID_lista_contactos,listac.nombre_lista_contacto,listac.descripcion_lista_contacto])
+            tree.pack(side='left', fill='both')
+    
+    def obtener_listas_contactos_contactos(tree2):
+        for i in tree2.get_children():
+            tree2.delete(i)
+        lista_contactos = ListaContactosController.obtener_lista_contactos_contactos()
+
+        for listac in lista_contactos:
+            for contactos in listac.Contactos:
+                tree2.insert('',tk.END ,values=[contactos.id_contacto,contactos.email,listac.ID_lista_contactos])
+                tree2.pack(side='left', fill='both')
+    
+    def actualizar(tree, tree2):
+        View_GestionarListasContactos.obtener_listas_contactos(tree)
+        View_GestionarListasContactos.obtener_listas_contactos_contactos(tree2)
+    
+
+    def crear_lista_contacto(self):
+        window = CrearListaContactos(self)
+        window.grab_set()
+    def agregar_contactos(self):
+        window = AgregarContactosLista(self)
+        window.grab_set()
+    def Eliminar_Contacto(self):
+        window = EliminarContacto(self)
+        window.grab_set()   
+class CrearListaContactos(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('600x420')
+        self.title('Crear lista de contactos')
+
+        #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Crear una lista de contactos',font = 'cooper 16', fg = 'deep pink')
+        titulo.pack(fill='both',side='top',expand=True)
+
+        # LABEL NOMBRE
+        titulo_nombre_lista = tk.Label(self, pady = 5, bg = 'white', text = 'Nombre',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_nombre_lista.pack(
+            fill='x',
+            side='top')
+        # ENTRY NOMBRE
+        txt_nombre_lista = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_nombre_lista.pack(
+            fill='x',
+            side='top')
+
+
+        # LABEL DESCRIPCION
+        titulo_descripcion_lista = tk.Label(self, pady = 5, bg = 'white', text = 'Descripcion',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_descripcion_lista.pack(
+            fill='x',
+            side='top')
+        # ENTRY DESCRIPCION
+        txt_descripcion_lista= tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_descripcion_lista.pack(
+            fill='x',
+            side='top')
+
+
+        tk.Button(self,
+                    text='Crear',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=lambda: CrearListaContactos.post_lista(self,
+                                                                txt_nombre_lista.get(),
+                                                               txt_descripcion_lista.get(),   
+                                                               )
+                   ).pack(side='top', fill='both',expand=True)
+
+        tk.Button(self,
+                    text='Cerrar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=self.destroy).pack(side='top', fill='both',expand=True)
+        
+    def post_lista(self,nombre,descripcion):
+            nueva_lista = ListaContactos(nombre_lista_contacto=nombre, descripcion_lista_contacto=descripcion)
+            ListaContactosController.crear_lista_contactos(nueva_lista)
+class AgregarContactosLista(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        
+        self.geometry('400x520')
+        self.title('Agregar contactos lista')
+
+        #LABEL TITULO
+        titulo = tk.Label(self, bg = 'white', text = 'Agregar contactos a una lista',font = 'cooper 16', fg = 'deep pink')
+        titulo.pack(fill='both',side='top',expand=True)
+        
+         # LABEL ID LISTA CONTACTO
+        titulo_ID_lista_contacto = tk.Label(self, pady = 5, bg = 'white', text = 'ID Lista contacto',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_ID_lista_contacto.pack(
+            fill='x',
+            side='top')
+        # ENTRY ID LISTA CONTACTO
+        txt_ID_lista_contacto = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_ID_lista_contacto.pack(
+            fill='x',
+            side='top')
+        
+        # LABEL NOMBRE
+        titulo_nombre = tk.Label(self, pady = 5, bg = 'white', text = 'Nombre y apellido',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_nombre.pack(
+            fill='x',
+            side='top')
+        # ENTRY NOMBRE
+        txt_nombre = tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_nombre.pack(
+            fill='x',
+            side='top')
+
+        # EDAD_DESDE
+        titulo_edad_desde= tk.Label(self, pady = 5, bg = 'white', text = 'Edad Desde',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_edad_desde.pack(
+            fill='x',
+            side='top')
+        # ENTRY EDAD_DESDE
+        txt_edad_desde= tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_edad_desde.pack(
+            fill='x',
+            side='top')
+        
+        # EDAD_HASTA
+        titulo_edad_hasta= tk.Label(self, pady = 5, bg = 'white', text = 'Edad hasta',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_edad_hasta.pack(
+            fill='x',
+            side='top')
+        # ENTRY EDAD_HASTA
+        txt_edad_hasta= tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_edad_hasta.pack(
+            fill='x',
+            side='top')
+
+        # LABEL SEXO
+        titulo_sexo= tk.Label(self, pady = 5, bg = 'white', text = 'Sexo',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_sexo.pack(
+            fill='x',
+            side='top')
+        # ENTRY SEXO
+        sexo_box = ttk.Combobox(self,
+            state="readonly",
+            values=['',"Masculino", "Femenino"])
+
+        sexo_box.current(0)
+        sexo_box.pack(side='top', fill='both',expand=True)
+
+        # LABEL ATRIBUTOS
+        titulo_atributos= tk.Label(self, pady = 5, bg = 'white', text = 'Atributos (Se puede ingresar varios separando con ",")',font = 'cooper 12', fg = 'deep pink', justify = 'left')
+        titulo_atributos.pack(
+            fill='x',
+            side='top')
+        # ENTRY ATRIBUTOS
+        txt_atributos= tk.Entry(self, bg = 'white',font = 'cooper 10', fg = 'deep pink')
+        txt_atributos.pack(
+            fill='x',
+            side='top')
+
+        tk.Button(self,
+                text='Agregar',
+                cursor='hand2',
+                bg = 'white',
+                fg = 'deep pink',
+                command=lambda: AgregarContactosLista.buscar_contactos(self,
+                                                                 txt_ID_lista_contacto.get(),
+                                                                txt_nombre.get(),
+                                                              txt_edad_desde.get(),
+                                                             txt_edad_hasta.get(),
+                                                            sexo_box.get(),
+                                                           txt_atributos.get()
+                                                           )
+                ).pack(side='top', fill='both',expand=True)
+
+        tk.Button(self,
+                    text='Cerrar',
+                    cursor='hand2',
+                    bg = 'white',
+                    fg = 'deep pink',
+                    command=self.destroy).pack(side='bottom', fill='both',expand=True)
+    
+    def buscar_contactos(self,ID_lista_contactos,nombre,edad_desde,edad_hasta,sexo,atributo):
+        
+        if nombre == '':
+            nombre = None
+        if edad_desde == '':
+            edad_desde = None
+        if edad_hasta == '':
+            edad_hasta = None
+        if sexo == '':
+            sexo = None
+        
+        atributo = atributo.split(',')
+        atributo = [x.strip(' ') for x in atributo]
+        
+        if atributo == ['']:
+            atributo = []
+        
+        list_contactos2 = Contacto_Controller.obtener_contactos_params(nombre=nombre,edad_desde=edad_desde, edad_hasta=edad_hasta, sexo=sexo, atributo=atributo, habilitado=1)
+        
+        
+        lista_de_contactos = ListaContactos(ID_lista_contactos=ID_lista_contactos,lista_contactos=list_contactos2)
+        
+        AgregarContactosLista.insertar_contactos(lista_de_contactos)
+        
+    def insertar_contactos(lista_de_contactos):
+        ListaContactosController.agregarContactos(lista_de_contactos)
 
 ### ------------------------------------------------------------------------- CAMPAÑAS VIEW -------------------- ###
 
@@ -1362,7 +1829,7 @@ class APP(tk.Tk):
 
         self.todos_los_frames = dict()
         for F in (HomeView,Login, ContactosMenu, CampañasMenu, View_GestionarContactos,
-                 View_GestionarAtributosClientes, View_ListasContactos,View_Campañas,View_AgregarAtributosAClientes):
+                 View_GestionarAtributosClientes, View_GestionarListasContactos,View_Campañas,View_AgregarAtributosAClientes):
 
             frame = F( contenedor_principal , self)
             self.todos_los_frames[F] = frame

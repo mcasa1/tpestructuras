@@ -95,10 +95,8 @@ class Brevo_contactos:
 
         try:
             api_response = self.api_instance.add_contact_to_list(ID_lista_contactos, contact_ids)
-            pprint(api_response)
         except ApiException as e:
-            print("Exception when calling ListsApi->add_contact_to_list: %s\n" % e)
-
+            pass
 class Brevo_campañas:
     def __init__(self):
         # Configure API key authorization: api-key
